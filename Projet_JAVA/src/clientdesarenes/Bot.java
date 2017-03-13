@@ -1,12 +1,21 @@
 package clientdesarenes;
 
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.time.StopWatch;
 
+import Routines.GoLit;
+import Routines.GoLivre;
 import Routines.Routine;
 import jeu.Joueur;
 import jeu.Plateau;
+import jeu.Joueur.Action;
+import jeu.astar.Node;
 
 public class Bot extends jeu.Joueur implements reseau.JoueurReseauInterface {
 
@@ -14,6 +23,7 @@ public class Bot extends jeu.Joueur implements reseau.JoueurReseauInterface {
 	Routine routine;
 	Action a;
 	StopWatch s;
+	Queue<Action> actions = new LinkedList<Action>();
 
 	Bot(String id, String cle) {
 		super(id);
@@ -23,17 +33,42 @@ public class Bot extends jeu.Joueur implements reseau.JoueurReseauInterface {
 
 	@Override
 	public Joueur.Action faitUneAction(Plateau t) {
-		//this.s.reset();
-		//this.s.start();
-		//Action a = super.faitUneAction(t);
-		// TODO
-		//this.s.stop();
-		//System.out.println("Bot.faitUneAction: Je joue " + a);
-		//System.out.println("Temps décision : " + s.getTime(TimeUnit.MILLISECONDS));
-		System.out.println("Temps décision : " + s.getTime(TimeUnit.MILLISECONDS));
+		this.s.reset();
+		this.s.start();
+		Action a = super.faitUneAction(t);
+		
+		if(donneEsprit() < DistanceLitPlusProche(t) + 20) {
+			this.routine = new GoLit();
+			routine.act(this, t);
+		} else {
+			
+			this.routine = new GoLivre();
+			routine.act(this, t);
+		}
+		
+		
+		if(joueurLePlusProche(t).size() == 2 ) {
+			if(actions.peek() == Action.RIEN)
+			a = Action.RIEN;
+		}
+		
+		this.s.stop();
+		System.out.println("Bot.faitUneAction: Je joue " + a);
+		System.out.println("Temps décision : " + s.getTime(TimeUnit.MILLISECONDS) + "ms");
+		System.out.println("Temps décision : " + s.getTime() + "t");
+		System.out.println("Temps décision : " + s.getNanoTime() + "ns");
 		return a;
 	}
 
+	public int DistanceLitPlusProche(Plateau t){
+    	ArrayList<Point> lits;
+		int taille_recherche = 1;
+		do {
+			lits = t.cherche(this.donnePosition(), taille_recherche++, Plateau.CHERCHE_LIT).get(1);
+		} while (lits == null || lits.isEmpty());
+		return t.donneCheminEntre(this.donnePosition(), lits.get(0)).size();
+    }
+	
 	@Override
 	public String donneID() {
 		return donneNom();
@@ -73,6 +108,10 @@ public class Bot extends jeu.Joueur implements reseau.JoueurReseauInterface {
 		this.routine = routine;
 	}
 
+	public void addRoutine(Action a) {
+        actions.add(a);
+    }
+	
 	/**
 	 * @return the s
 	 */
@@ -80,9 +119,25 @@ public class Bot extends jeu.Joueur implements reseau.JoueurReseauInterface {
 		return s;
 	}
 	
-	
-	
-	
-
+	public ArrayList<Node> joueurLePlusProche(Plateau t){
+    	HashMap listeJoueur;
+    	
+    	Point positionJoueur;
+    	
+    	for(int i = 1;;++i){
+    		listeJoueur = t.cherche(this.donnePosition(), i, t.CHERCHE_JOUEUR);
+    		if (!listeJoueur.isEmpty()) {
+    			
+				ArrayList<Point> arrayPointJoueur = (ArrayList<Point>) listeJoueur.get(4);
+    			for (Point p : arrayPointJoueur){
+					positionJoueur = p;
+					if(!positionJoueur.equals(this.donnePosition())){
+						ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), positionJoueur);
+		     			return arrayPointChemin;
+					}
+    	     	}
+    		}
+    	}
+    }
 
 }

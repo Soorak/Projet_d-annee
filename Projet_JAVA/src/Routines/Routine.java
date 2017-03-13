@@ -1,12 +1,16 @@
 package Routines;
 
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import clientdesarenes.Bot;
 import jeu.Plateau;
 import jeu.Joueur.Action;
 import jeu.astar.Node;
 
 public abstract class Routine {
-
+	
     public enum RoutineState {
         Success,
         Failure,
@@ -22,8 +26,6 @@ public abstract class Routine {
         this.state = RoutineState.Running;
     }
 
-    public abstract void reset();
-
     public abstract void act(Bot droid, Plateau board);
 
     public Action direction(Bot bot, Node node){
@@ -36,7 +38,7 @@ public abstract class Routine {
     	} else if (node.getPosX() == bot.donnePosition().getX() && node.getPosY() < bot.donnePosition().getY()){
     		return Action.HAUT;
     	}
-    	return null;
+    	return Action.RIEN;
     }
     
     protected void succeed() {
@@ -63,5 +65,26 @@ public abstract class Routine {
 
     public RoutineState getState() {
         return state;
+    }
+    
+    public ArrayList<Node> joueurLePlusProche(Bot bot, Plateau t){
+    	HashMap listeJoueur;
+    	
+    	Point positionJoueur;
+    	
+    	for(int i = 1;;++i){
+    		listeJoueur = t.cherche(bot.donnePosition(), i, t.CHERCHE_JOUEUR);
+    		if (!listeJoueur.isEmpty()) {
+    			
+				ArrayList<Point> arrayPointJoueur = (ArrayList<Point>) listeJoueur.get(4);
+    			for (Point p : arrayPointJoueur){
+					positionJoueur = p;
+					if(!positionJoueur.equals(bot.donnePosition())){
+						ArrayList<Node> arrayPointChemin = t.donneCheminEntre(bot.donnePosition(), positionJoueur);
+		     			return arrayPointChemin;
+					}
+    	     	}
+    		}
+    	}
     }
 }
