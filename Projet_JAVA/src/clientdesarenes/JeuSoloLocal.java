@@ -1,5 +1,8 @@
 package clientdesarenes;
 
+import java.io.File;
+import java.io.IOException;
+
 import gui.FenetreDeJeu;
 import jeu.MaitreDuJeu;
 import jeu.Plateau;
@@ -26,5 +29,16 @@ public class JeuSoloLocal {
         java.awt.EventQueue.invokeLater(() -> {
             f.setVisible(true);
         });  
+        
+        File dossier = new File("./stats");
+		File[] fichiers = dossier.listFiles();
+		File file = new File("./stats/" + fichiers.length);
+		if(!file.exists()) {
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
     }
 }
