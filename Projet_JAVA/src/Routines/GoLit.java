@@ -8,7 +8,6 @@ import jeu.Plateau;
 import jeu.Joueur.Action;
 import jeu.astar.Node;
 
-
 /**
  * 
  * @author Jeremie Doche
@@ -17,22 +16,15 @@ import jeu.astar.Node;
  */
 public class GoLit extends Routine {
 
-	public GoLit() {
-		
-	}
-
-	@Override
-	public void reset() {
-		// TODO Auto-generated method stub
-	}
+	public GoLit() {}
 
 	@Override
 	public void act(Bot bot, Plateau plateau) {
-    	if(bot.donneEsprit() < 50) {
-    		bot.setAction(super.direction(bot, litLePlusProche(bot, plateau)));
-    	}
+		if(super.joueurLePlusProche(bot, plateau).size() > 2) {
+			bot.setAction(super.direction(bot, litLePlusProche(bot, plateau)));
+		}
 	}
-	
+
 	/**
 	 * 
 	 * @param bot Le bot qui va executer la routine
@@ -40,13 +32,12 @@ public class GoLit extends Routine {
 	 * @return
 	 */
 	public Node litLePlusProche(Bot bot, Plateau t){
-    	ArrayList<Point> lits;
+		ArrayList<Point> lits;
 		int taille_recherche = 1;
 		do {
 			lits = t.cherche(bot.donnePosition(), taille_recherche++, Plateau.CHERCHE_LIT).get(1);
 		} while (lits == null || lits.isEmpty());
 		System.err.println("J'ai " + bot.donneEsprit() + "points d'esprit, je vais au lit !");
 		return t.donneCheminEntre(bot.donnePosition(), lits.get(0)).get(0);
-    }
-
+	}
 }

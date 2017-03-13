@@ -29,7 +29,7 @@ public class Bot_GTEST extends Bot {
     	if(donneEsprit() < DistanceLitPlusProche(t) + 20) {
     		a = direction(litLePlusProche(t));
     	} else {
-    		
+    		a = direction(LivreLePlusProche(t));
     	}
         System.out.println("Bot.faitUneAction: Je joue " + a);
         super.setAction(a);
@@ -86,6 +86,21 @@ public class Bot_GTEST extends Bot {
 		} while (lits == null || lits.isEmpty());
 		System.err.println("J'ai " + donneEsprit() + "points d'esprit, je vais au lit !");
 		return t.donneCheminEntre(this.donnePosition(), lits.get(0)).get(0);
+    }
+    
+    /**
+	 * 
+	 * @param t Le plateau de jeu
+	 * @return
+	 */
+    public Node LivreLePlusProche(Plateau t){
+    	ArrayList<Point> livre;
+		int taille_recherche = 1;
+		do {
+			livre = t.cherche(this.donnePosition(), taille_recherche++, Plateau.CHERCHE_LIVRE).get(2);
+		} while (livre == null || livre.isEmpty());
+		System.err.println("Je vais m'instruire !");
+		return t.donneCheminEntre(this.donnePosition(), livre.get(0)).get(0);
     }
 	
 	public Action direction(Node node){

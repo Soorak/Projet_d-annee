@@ -72,13 +72,19 @@ public class teeeeest
 	
 	public int pts_de_vie_enn_zone(Point p)
     {
-		HashMap ListeEnnZone = t.cherche(p, 3, t.CHERCHE_JOUEUR);
+		HashMap ListeEnnZone = t.cherche(p, 5, t.CHERCHE_JOUEUR);
 		
 		if(!ListeEnnZone.isEmpty())
         {
         	ArrayList<Point> arrayPointJoueurs = (ArrayList<Point>) ListeEnnZone.get(0);
         	int sommePdv = 0;
         	
+        	for (Point pointTest : arrayPointJoueurs) 
+        	{
+        		Point PosJoueurEnCours = new Point(pointTest.x,pointTest.y);
+        		Joueur JoueurEnCours = 
+        		sommePdv = 				
+			}
         }
     }
 	
@@ -98,14 +104,14 @@ public class teeeeest
 			}
 			else
 			{
-				if(pts_vie_ennemis_sup)
+				/*if(pts_vie_ennemis_sup)
 				{
 					prio_harakiri();
-				}
-				else
-				{
-					prio_kamikaze();
-				}	
+				}*/
+				//CODER KAMIKAZE
+				
+				prio_harakiri();
+					
 			}
 		}
 	}
@@ -123,7 +129,7 @@ public class teeeeest
 		}
 		if(enn_faible_proche)
 		{
-			prio_enn_faible();
+			prio_enn_faible(enn_faible_proche);
 		}
 		if(livre_proche != null)
 		{
@@ -146,29 +152,33 @@ public class teeeeest
 		
 	}
 	
-	public void prio_kamikaze()
+	/*public void prio_kamikaze(Point enn_proches)
 	{
 		direction(enn_proches);
-	}
+	}*/
 	
-	public void prio_lit()
+	public void prio_lit(Point lit_proche)
 	{
 		direction(lit_proche);
 	}
 	
-	public void prio_enn_fragile()
+	public void prio_enn_fragile(Point enn_fragile_proche)
 	{
 		direction(enn_fragile_proche);
 	}
 	
-	public void prio_enn_faible()
+	public void prio_enn_faible(Point enn_faible_proche)
 	{
 		direction(enn_faible_proche);
 	}
 	
-	public void prio_livre()
+	public void prio_livre(Point livre_proche)
 	{
 		direction(livre_proche);
 	}
 	
+	public void pointFuite()
+	{
+		
+	}
 }
