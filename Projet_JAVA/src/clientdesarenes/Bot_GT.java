@@ -1,19 +1,27 @@
 package clientdesarenes;
 
+import java.awt.Point;
+import java.util.ArrayList;
+
 import jeu.Joueur;
 import jeu.Plateau;
 
-public class Bot extends jeu.Joueur implements reseau.JoueurReseauInterface {
+public class Bot_GT extends jeu.Joueur implements reseau.JoueurReseauInterface {
 
     String key;
     
-    Bot(String id, String cle) {
+    Bot_GT(String id, String cle) {
         super(id);
         key = cle;
     }
     
     @Override
-    public Joueur.Action faitUneAction(Plateau t) {   
+    public Joueur.Action faitUneAction(Plateau t) {
+    	if(donneEsprit() < 30) {
+    		System.err.println("J'ai " + donneEsprit() + "points d'esprit, je vais au lit !");
+    		ArrayList<Point> lits = t.cherche(this.donnePosition(), 10, Plateau.CHERCHE_LIT).get(1);
+    		t.donneCheminEntre(this.donnePosition(), lits.get(0));
+    	}
         Action a = super.faitUneAction(t);
         System.out.println("Bot.faitUneAction: Je joue " + a);
         return a;
