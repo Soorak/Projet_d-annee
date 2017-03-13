@@ -2,6 +2,7 @@ package clientdesarenes;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import jeu.Joueur;
 import jeu.Plateau;
@@ -21,13 +22,7 @@ public class Bot_GT extends jeu.Joueur implements reseau.JoueurReseauInterface {
     public Joueur.Action faitUneAction(Plateau t) {
     	Action a = super.faitUneAction(t);
     	if(donneEsprit() < 50) {
-    		ArrayList<Point> lits;
-    		int taille_recherche = 1;
-    		do {
-    			lits = t.cherche(this.donnePosition(), taille_recherche++, Plateau.CHERCHE_LIT).get(1);
-    		} while (lits == null || lits.isEmpty());
-    		System.err.println("J'ai " + donneEsprit() + "points d'esprit, je vais au lit !");
-    		a =  direction(t.donneCheminEntre(this.donnePosition(), lits.get(0)).get(0));
+    		a = direction(litLePlusProche(t));
     	}
         System.out.println("Bot.faitUneAction: Je joue " + a);
         return a;
@@ -59,15 +54,25 @@ public class Bot_GT extends jeu.Joueur implements reseau.JoueurReseauInterface {
     }
     
     public Action direction(Node node){
-    	if (node.getPosX() < this.donnePosition().getX() || node.getPosY() == this.donnePosition().getY()){
+    	if (node.getPosX() < this.donnePosition().getX() && node.getPosY() == this.donnePosition().getY()){
     		return Action.GAUCHE;
-    	} else if (node.getPosX() > this.donnePosition().getX() || node.getPosY() == this.donnePosition().getY()){
+    	} else if (node.getPosX() > this.donnePosition().getX() && node.getPosY() == this.donnePosition().getY()){
     		return Action.DROITE;
-    	} else if (node.getPosX() == this.donnePosition().getX() || node.getPosY() > this.donnePosition().getY()){
+    	} else if (node.getPosX() == this.donnePosition().getX() && node.getPosY() > this.donnePosition().getY()){
     		return Action.BAS;
-    	} else if (node.getPosX() == this.donnePosition().getX() || node.getPosY() < this.donnePosition().getY()){
+    	} else if (node.getPosX() == this.donnePosition().getX() && node.getPosY() < this.donnePosition().getY()){
     		return Action.HAUT;
     	}
     	return null;
+    }
+    
+    public Node litLePlusProche(Plateau t){
+    	ArrayList<Point> lits;
+		int taille_recherche = 1;
+		do {
+			lits = t.cherche(this.donnePosition(), taille_recherche++, Plateau.CHERCHE_LIT).get(1);
+		} while (lits == null || lits.isEmpty());
+		System.err.println("J'ai " + donneEsprit() + "points d'esprit, je vais au lit !");
+		return t.donneCheminEntre(this.donnePosition(), lits.get(0)).get(0);
     }
 }
