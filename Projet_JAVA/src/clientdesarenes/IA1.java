@@ -25,7 +25,11 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
     public Joueur.Action faitUneAction(Plateau t) {           
         Action a = null;
         
-        if(this.donneEsprit() > 30) {
+        ArrayList <Node> deplacementVersLit = litLePlusProche(t);
+        if(this.donneEsprit() < 50 && deplacementVersLit.size() <= 3){
+        	a = chercheLit(t);
+        }
+        else if(this.donneEsprit() > 20 + deplacementVersLit.size()) {
         	a = chercheLivre(t);
         } else {
         	a = chercheLit(t);
@@ -76,26 +80,34 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
 			
 		/* ---------------- CASE 2 : Player 3 cells ---------------- */	
 		} else if (deplacementVersJoueur.size() == 3) {
-			if(this.getActions().peek() == Action.RIEN) {
-				if (j.donnePointsCulture() > this.donnePointsCulture() - 20 
-						&& j.donneEsprit() <= 20 && this.donneEsprit() > 50) {
-					return this.direction(deplacementVersJoueur.get(0));
-				} else {
-					return this.direction(deplacementVersLivre.get(0));
-				}
+			if(deplacementVersLivre.size() <= 3){
+				return this.direction(deplacementVersLivre.get(0));
 			} else {
-				return Action.RIEN;
+				if(this.getActions().peek() == Action.RIEN) {
+					if (j.donnePointsCulture() > this.donnePointsCulture() - 20 
+							&& j.donneEsprit() <= 20 && this.donneEsprit() > 50) {
+						return this.direction(deplacementVersJoueur.get(0));
+					} else {
+						return this.direction(deplacementVersLivre.get(0));
+					}
+				} else {
+					return Action.RIEN;
+				}
 			}
 		
 		/* ---------------- CASE 3 : Player 2 cells ---------------- */	
 		} else if (deplacementVersJoueur.size() == 2) {
-			if(
+			if(deplacementVersLivre.size() <= 2) {
+				return this.direction(deplacementVersLivre.get(0));
+			} else {
+				if(
 					(j.donnePointsCulture() > this.donnePointsCulture() - 20 
-							&& j.donneEsprit() < this.donneEsprit()) 
-					|| j.donneEsprit() <= 20) {
-				return this.direction(deplacementVersJoueur.get(0));
+								&& j.donneEsprit() < this.donneEsprit()) 
+						|| j.donneEsprit() <= 20) {
+					return this.direction(deplacementVersJoueur.get(0));
+				}
 			}
-
+			
 		/* -------------- CASE 4 : Player next to bot -------------- */	
 		} else {
 			return this.direction(deplacementVersLivre.get(0));
@@ -151,8 +163,7 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
     		listeLivre = t.cherche(this.donnePosition(), i, t.CHERCHE_LIVRE);
     		if (!listeLivre.isEmpty()) {
 				ArrayList<Point> arrayPointLivres = (ArrayList<Point>) listeLivre.get(2);
-    			for (Point p : arrayPointLivres){
-    				
+    			for (Point p : arrayPointLivres){    				
     	     		if(t.contientUnLivreQuiNeLuiAppartientPas(this, t.donneContenuCellule(p))){
     	     			positionLivre = p;
     	     	     	ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), positionLivre);
