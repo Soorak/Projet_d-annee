@@ -14,7 +14,7 @@ public class JeuSoloLocal {
         MaitreDuJeu jeu = new MaitreDuJeu(p);
         
         jeu.metJoueurEnPosition(0, new IA1("Carapuce", "cli5_PASS5"));
-        //jeu.metJoueurEnPosition(3, new Bot("Bulbizarre", "cli4_PASS4"));
+        jeu.metJoueurEnPosition(3, new Bot_GT("Bulbizarre", "cli4_PASS4"));
         //jeu.metJoueurEnPosition(1, new jeu.Joueur("Rouge"));
         //jeu.metJoueurEnPosition(2, new jeu.Joueur("Jaune"));
        

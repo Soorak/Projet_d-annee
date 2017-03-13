@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 import jeu.Joueur;
 import jeu.Plateau;
+import jeu.Joueur.Action;
+import jeu.astar.Node;
 
 public class Bot_GT extends jeu.Joueur implements reseau.JoueurReseauInterface {
 
@@ -17,12 +19,16 @@ public class Bot_GT extends jeu.Joueur implements reseau.JoueurReseauInterface {
     
     @Override
     public Joueur.Action faitUneAction(Plateau t) {
-    	if(donneEsprit() < 30) {
+    	Action a = super.faitUneAction(t);
+    	if(donneEsprit() < 50) {
+    		ArrayList<Point> lits;
+    		int taille_recherche = 1;
+    		do {
+    			lits = t.cherche(this.donnePosition(), taille_recherche++, Plateau.CHERCHE_LIT).get(1);
+    		} while (lits == null || lits.isEmpty());
     		System.err.println("J'ai " + donneEsprit() + "points d'esprit, je vais au lit !");
-    		ArrayList<Point> lits = t.cherche(this.donnePosition(), 10, Plateau.CHERCHE_LIT).get(1);
-    		t.donneCheminEntre(this.donnePosition(), lits.get(0));
+    		a =  direction(t.donneCheminEntre(this.donnePosition(), lits.get(0)).get(0));
     	}
-        Action a = super.faitUneAction(t);
         System.out.println("Bot.faitUneAction: Je joue " + a);
         return a;
     }
@@ -50,5 +56,18 @@ public class Bot_GT extends jeu.Joueur implements reseau.JoueurReseauInterface {
     @Override
     public void deconnecte() {
         System.out.println("Bot: On est déconnecté du serveur.");
+    }
+    
+    public Action direction(Node node){
+    	if (node.getPosX() < this.donnePosition().getX() || node.getPosY() == this.donnePosition().getY()){
+    		return Action.GAUCHE;
+    	} else if (node.getPosX() > this.donnePosition().getX() || node.getPosY() == this.donnePosition().getY()){
+    		return Action.DROITE;
+    	} else if (node.getPosX() == this.donnePosition().getX() || node.getPosY() > this.donnePosition().getY()){
+    		return Action.BAS;
+    	} else if (node.getPosX() == this.donnePosition().getX() || node.getPosY() < this.donnePosition().getY()){
+    		return Action.HAUT;
+    	}
+    	return null;
     }
 }

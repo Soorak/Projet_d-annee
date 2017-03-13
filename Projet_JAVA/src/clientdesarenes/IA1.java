@@ -32,9 +32,6 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
         
         if(!listeLivre.isEmpty()){
         	ArrayList<Point> arrayPointLivres = (ArrayList<Point>) listeLivre.get(2);
-        	for each(){
-        		
-        	}
         	ArrayList<Node> arrayPointChemin = t.donneCheminEntre(positionJoueur, arrayPointLivres.get(0));
         	System.out.println(arrayPointLivres.get(0));
         	a = direction(arrayPointChemin.get(0));
