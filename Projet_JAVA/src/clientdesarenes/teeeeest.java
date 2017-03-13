@@ -12,8 +12,10 @@ import jeu.Joueur.Action;
 public class teeeeest 
 {
 
+	Plateau t;
 	boolean enn_proches;
-	Point chemin_lit;
+	Point lit_proche;
+	Point lit_proche_destination;
 	boolean chemin_lit_ok;
 	boolean pts_vie_ennemis_sup;
 	boolean enn_faible_proche;
@@ -25,7 +27,6 @@ public class teeeeest
 	
 	public void play()
 	{
-		
 		Point positionJoueur = this.donnePosition();
         
         Point destinationDroite = new Point((int) positionJoueur.getX() + 1, (int) positionJoueur.getY());
@@ -53,26 +54,34 @@ public class teeeeest
         }
         
         
-        
-        
         //CALCUL DE LA SITUATION
 		if(pts_esprit>80)
 		{
 			situation_avantageuse();
-			break;
 		}
 		if(pts_esprit>20)
 		{
 			situation_moyenne();
-			break;
 		}
 		if(pts_esprit<=20)
 		{
 			situation_dangereuse();
-			break;
 		}
 	}
 
+	
+	public int pts_de_vie_enn_zone(Point p)
+    {
+		HashMap ListeEnnZone = t.cherche(p, 3, t.CHERCHE_JOUEUR);
+		
+		if(!ListeEnnZone.isEmpty())
+        {
+        	ArrayList<Point> arrayPointJoueurs = (ArrayList<Point>) ListeEnnZone.get(0);
+        	int sommePdv = 0;
+        	
+        }
+    }
+	
 
 	public void situation_dangereuse()
 	{
@@ -80,26 +89,22 @@ public class teeeeest
 		if(!chemin_lit_ok)
 		{
 			prio_harakiri();
-			break;
 		}
 		else
 		{
 			if(!enn_proches)
 			{
 				prio_lit();
-				break;
 			}
 			else
 			{
 				if(pts_vie_ennemis_sup)
 				{
 					prio_harakiri();
-					break;
 				}
 				else
 				{
 					prio_kamikaze();
-					break;
 				}	
 			}
 		}
@@ -148,7 +153,7 @@ public class teeeeest
 	
 	public void prio_lit()
 	{
-		direction(chemin_lit);
+		direction(lit_proche);
 	}
 	
 	public void prio_enn_fragile()
@@ -163,7 +168,7 @@ public class teeeeest
 	
 	public void prio_livre()
 	{
-		
+		direction(livre_proche);
 	}
 	
 }
