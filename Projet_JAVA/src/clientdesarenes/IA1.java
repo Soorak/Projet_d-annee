@@ -1,6 +1,7 @@
 package clientdesarenes;
 
 import java.awt.Point;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -20,14 +21,16 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
 	@Override
     public Joueur.Action faitUneAction(Plateau t) {           
         Action a = null;
+        System.out.println(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS"));
         
         int nbrEsprit = this.donneEsprit();
         if(nbrEsprit > 80) {
         	ArrayList <Node> livre = livreLePlusProche(t);
         	ArrayList <Node> joueur = joueurLePlusProche(t);
+        	Node positionJoueur = joueur.get(joueur.size()-1);
         	
         	if (joueur.size() < livre.size() && 
-        			t.donneJoueurEnPosition(joueur.get(joueur.size()).getPosX(), joueur.get(joueur.size()).getPosY()).donneEsprit() < 21){
+        		t.donneJoueurEnPosition(positionJoueur.getPosX(), positionJoueur.getPosY()).donneEsprit() <21){
         		a = direction(joueur.get(0));
         	} else {
         		a = direction(livre.get(0));
@@ -40,6 +43,7 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
         }        
         
         System.out.println("Bot.faitUneAction: Je joue " + a); 
+        System.out.println(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS"));
         return a;
     }
             
