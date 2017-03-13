@@ -1,5 +1,7 @@
 package clientdesarenes;
 
+import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.lang3.time.StopWatch;
 
 import Routines.Routine;
@@ -21,13 +23,14 @@ public class Bot extends jeu.Joueur implements reseau.JoueurReseauInterface {
 
 	@Override
 	public Joueur.Action faitUneAction(Plateau t) {
-		this.s.reset();
-		this.s.start();
-		Action a = super.faitUneAction(t);
+		//this.s.reset();
+		//this.s.start();
+		//Action a = super.faitUneAction(t);
 		// TODO
-		this.s.stop();
-		System.out.println("Bot.faitUneAction: Je joue " + a);
-		System.out.println("Temps décision : " + s.getNanoTime());
+		//this.s.stop();
+		//System.out.println("Bot.faitUneAction: Je joue " + a);
+		//System.out.println("Temps décision : " + s.getTime(TimeUnit.MILLISECONDS));
+		System.out.println("Temps décision : " + s.getTime(TimeUnit.MILLISECONDS));
 		return a;
 	}
 
@@ -69,6 +72,17 @@ public class Bot extends jeu.Joueur implements reseau.JoueurReseauInterface {
 	public void setRoutine(Routine routine) {
 		this.routine = routine;
 	}
+
+	/**
+	 * @return the s
+	 */
+	public StopWatch getS() {
+		return s;
+	}
+	
+	
+	
+	
 
 
 }
