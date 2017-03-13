@@ -23,11 +23,11 @@ public class Bot_GT extends jeu.Joueur implements reseau.JoueurReseauInterface {
     
     @Override
     public Joueur.Action faitUneAction(Plateau t) {
-    	Action a = super.faitUneAction(t);
-    	if(donneEsprit() < DistanceLitPlusProche(t) + 20) {
-    		a = direction(litLePlusProche(t));
+    	Action a = null;
+    	if(donneEsprit() < DistanceLitPlusProche(t) + 40) {
+    		a = direction(litLePlusProche(t).get(0));
     	} else {
-    		a = direction(LivreLePlusProche(t));
+    		a = direction(livreLePlusProche(t).get(0));
     	}
         System.out.println("Bot.faitUneAction: Je joue " + a);
         return a;
@@ -67,49 +67,65 @@ public class Bot_GT extends jeu.Joueur implements reseau.JoueurReseauInterface {
 		return t.donneCheminEntre(this.donnePosition(), lits.get(0)).size();
     }
     
-    /**
-	 * 
-	 * @param t Le plateau de jeu
-	 * @return
-	 */
-    public Node litLePlusProche(Plateau t){
-    	ArrayList<Point> lits;
-		int taille_recherche = 1;
-		do {
-			lits = t.cherche(this.donnePosition(), taille_recherche++, Plateau.CHERCHE_LIT).get(1);
-		} while (lits == null || lits.isEmpty());
-		System.err.println("J'ai " + donneEsprit() + "points d'esprit, je vais au lit !");
-		return t.donneCheminEntre(this.donnePosition(), lits.get(0)).get(0);
+    public ArrayList<Node> litLePlusProche(Plateau t){
+    	HashMap listeLit;
+    	
+    	Point positionLit;
+    	
+    	for(int i = 1;;++i){
+    		listeLit = t.cherche(this.donnePosition(), i, t.CHERCHE_LIT);
+    		
+    		if (!listeLit.isEmpty()) {
+				ArrayList<Point> arrayPointLit = (ArrayList<Point>) listeLit.get(1);
+    			for (Point p : arrayPointLit){
+    				positionLit = p;
+	     	     	ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), positionLit);
+	     			return arrayPointChemin;
+    	     	}
+    		}
+    	}
     }
     
-    /**
-	 * 
-	 * @param t Le plateau de jeu
-	 * @return
-	 */
-    public Node joueurLePlusProche(Plateau t){
-    	ArrayList<Point> joueur;
-		int taille_recherche = 1;
-		do {
-			joueur = t.cherche(this.donnePosition(), taille_recherche++, Plateau.CHERCHE_JOUEUR).get(4);
-		} while (joueur == null || joueur.isEmpty());
-		System.err.println("Je vais taper un joueur !");
-		return t.donneCheminEntre(this.donnePosition(), joueur.get(0)).get(0);
+    public ArrayList<Node> joueurLePlusProche(Plateau t){
+    	HashMap listeJoueur;
+    	
+    	Point positionJoueur;
+    	
+    	for(int i = 1;;++i){
+    		listeJoueur = t.cherche(this.donnePosition(), i, t.CHERCHE_JOUEUR);
+    		if (!listeJoueur.isEmpty()) {
+    			
+				ArrayList<Point> arrayPointJoueur = (ArrayList<Point>) listeJoueur.get(4);
+    			for (Point p : arrayPointJoueur){
+					positionJoueur = p;
+					if(!positionJoueur.equals(this.donnePosition())){
+						ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), positionJoueur);
+		     			return arrayPointChemin;
+					}
+    	     	}
+    		}
+    	}
     }
     
-    /**
-	 * 
-	 * @param t Le plateau de jeu
-	 * @return
-	 */
-    public Node LivreLePlusProche(Plateau t){
-    	ArrayList<Point> livre;
-		int taille_recherche = 1;
-		do {
-			livre = t.cherche(this.donnePosition(), taille_recherche++, Plateau.CHERCHE_LIVRE).get(2);
-		} while (livre == null || livre.isEmpty());
-		System.err.println("Je vais m'instruire !");
-		return t.donneCheminEntre(this.donnePosition(), livre.get(0)).get(0);
+    public ArrayList<Node> livreLePlusProche(Plateau t){
+    	HashMap listeLivre;
+    	
+    	Point positionLivre;
+    	
+    	for(int i = 1;;++i){
+    		listeLivre = t.cherche(this.donnePosition(), i, t.CHERCHE_LIVRE);
+    		if (!listeLivre.isEmpty()) {
+				ArrayList<Point> arrayPointLivres = (ArrayList<Point>) listeLivre.get(2);
+    			for (Point p : arrayPointLivres){
+    				
+    	     		if(t.contientUnLivreQuiNeLuiAppartientPas(this, t.donneContenuCellule(p))){
+    	     			positionLivre = p;
+    	     	     	ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), positionLivre);
+    	     			return arrayPointChemin;
+    	     		}
+    	     	}
+    		}
+    	}
     }
 	
 	public Action direction(Node node){
