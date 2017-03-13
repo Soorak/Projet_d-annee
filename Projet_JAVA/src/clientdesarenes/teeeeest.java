@@ -12,13 +12,14 @@ import jeu.Joueur.Action;
 public class teeeeest 
 {
 
-	boolean ennemis_proches;
+	boolean enn_proches;
+	Point chemin_lit;
 	boolean chemin_lit_ok;
 	boolean pts_vie_ennemis_sup;
 	boolean enn_faible_proche;
 	boolean enn_fragile_proche;
 	int pts_esprit;
-	boolean livre_proche;
+	Point livre_proche = null;
 	int nbr_enn_proches;
 
 	
@@ -83,7 +84,7 @@ public class teeeeest
 		}
 		else
 		{
-			if(!ennemis_proches)
+			if(!enn_proches)
 			{
 				prio_lit();
 				break;
@@ -97,7 +98,7 @@ public class teeeeest
 				}
 				else
 				{
-					prio_assassinat();
+					prio_kamikaze();
 					break;
 				}	
 			}
@@ -119,7 +120,7 @@ public class teeeeest
 		{
 			prio_enn_faible();
 		}
-		if(livre_proche)
+		if(livre_proche != null)
 		{
 			prio_livre();
 		}
@@ -128,27 +129,36 @@ public class teeeeest
 	
 	public void prio_harakiri()
 	{
+		if(livre_proche != null)
+		{
+			direction(livre_proche);
+		}
+		else
+		{
+			Point point_de_fuite = pointFuite();
+			direction(point_de_fuite);
+		}
 		
 	}
 	
-	public void prio_assassinat()
+	public void prio_kamikaze()
 	{
-		
+		direction(enn_proches);
 	}
 	
 	public void prio_lit()
 	{
-		
+		direction(chemin_lit);
 	}
 	
 	public void prio_enn_fragile()
 	{
-		
+		direction(enn_fragile_proche);
 	}
 	
 	public void prio_enn_faible()
 	{
-		
+		direction(enn_faible_proche);
 	}
 	
 	public void prio_livre()
