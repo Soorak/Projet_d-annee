@@ -26,7 +26,6 @@ public class Bot_GT extends jeu.Joueur implements reseau.JoueurReseauInterface {
     
     @Override
     public Joueur.Action faitUneAction(Plateau t) {
-    	récuperer_stats(t);
     	Action a = null;
     	try {
 	    	int ptEsprit = donneEsprit();
@@ -166,7 +165,7 @@ public class Bot_GT extends jeu.Joueur implements reseau.JoueurReseauInterface {
 	public boolean possibleChercherLivre(Point livre, Point lit, int esprit, Plateau t) {
 		System.err.println(joueurLePlusProche(t));
 		t.donneGrillePourAstar();
-		ArrayList<Node> cheminLivre = t.donneCheminAvecObstacleSupplementaires(this.donnePosition(), livre, joueurLePlusProche(t));
+		ArrayList<Node> cheminLivre = t.donneCheminAvecObstaclesSupplementaires(this.donnePosition(), livre, joueurLePlusProche(t));
 		int dstLitDepuisLit = t.donneCheminEntre(livre, lit).size();
 		if(cheminLivre == null || cheminLivre.isEmpty()) {
 			if( (t.donneCheminEntre(this.donnePosition(), livre).size() + dstLitDepuisLit + 20) < esprit)
@@ -176,19 +175,5 @@ public class Bot_GT extends jeu.Joueur implements reseau.JoueurReseauInterface {
 				return true;
 		}
 		return false;
-	}
-	
-	public void récuperer_stats (Plateau t) {
-		File dossier = new File("./stats");
-		File[] fichiers = dossier.listFiles();
-		File file = new File("./stats/" + (fichiers.length-1));
-		try {
-			FileWriter writer = new FileWriter(file, true);
-			String toWrite = t.donneTourCourant() + ";" + this.donnePointsCulture() +"\n";
-			writer.write(toWrite);
-			writer.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 }

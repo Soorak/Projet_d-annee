@@ -25,7 +25,7 @@ public class Bot extends jeu.Joueur implements reseau.JoueurReseauInterface {
 	StopWatch s;
 	Queue<Action> actions = new LinkedList<Action>();
 
-	Bot(String id, String cle) {
+	public Bot(String id, String cle) {
 		super(id);
 		key = cle;
 		s = new StopWatch();
