@@ -1,14 +1,18 @@
 package clientdesarenes;
 
+import java.awt.Desktop.Action;
+
+import Routines.Routine;
 import jeu.Joueur;
 import jeu.Plateau;
 
-public class Bot extends jeu.Joueur implements reseau.JoueurReseauInterface {
+public class BotJD extends jeu.Joueur implements reseau.JoueurReseauInterface {
 
     String key;
+    Routine routine;
     Action a;
     
-    Bot(String id, String cle) {
+    BotJD(String id, String cle) {
         super(id);
         key = cle;
     }
@@ -49,4 +53,12 @@ public class Bot extends jeu.Joueur implements reseau.JoueurReseauInterface {
     	this.a = Action.HAUT;
     }
     
+    /* -- ROUTINES WORK -- */
+    public Routine getRoutine() {
+        return routine;
+    }
+
+    public void setRoutine(Routine routine) {
+        this.routine = routine;
+    }
 }
