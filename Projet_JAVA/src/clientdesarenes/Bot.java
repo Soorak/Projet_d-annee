@@ -35,28 +35,19 @@ public class Bot extends jeu.Joueur implements reseau.JoueurReseauInterface {
 	public Joueur.Action faitUneAction(Plateau t) {
 		this.s.reset();
 		this.s.start();
-		Action a = super.faitUneAction(t);
 		
 		if(donneEsprit() < DistanceLitPlusProche(t) + 20) {
 			this.routine = new GoLit();
 			routine.act(this, t);
 		} else {
-			
 			this.routine = new GoLivre();
 			routine.act(this, t);
-		}
-		
-		
-		if(joueurLePlusProche(t).size() == 2 ) {
-			if(actions.peek() == Action.RIEN)
-			a = Action.RIEN;
 		}
 		
 		this.s.stop();
 		System.out.println("Bot.faitUneAction: Je joue " + a);
 		System.out.println("Temps décision : " + s.getTime(TimeUnit.MILLISECONDS) + "ms");
-		System.out.println("Temps décision : " + s.getTime() + "t");
-		System.out.println("Temps décision : " + s.getNanoTime() + "ns");
+		actions.add(a);
 		return a;
 	}
 
@@ -108,10 +99,19 @@ public class Bot extends jeu.Joueur implements reseau.JoueurReseauInterface {
 		this.routine = routine;
 	}
 
-	public void addRoutine(Action a) {
+	public void addAction(Action a) {
         actions.add(a);
     }
 	
+	
+	
+	/**
+	 * @return the actions
+	 */
+	public Queue<Action> getActions() {
+		return actions;
+	}
+
 	/**
 	 * @return the s
 	 */

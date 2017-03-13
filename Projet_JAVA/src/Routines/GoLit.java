@@ -22,6 +22,10 @@ public class GoLit extends Routine {
 	public void act(Bot bot, Plateau plateau) {
 		if(super.joueurLePlusProche(bot, plateau).size() > 2) {
 			bot.setAction(super.direction(bot, litLePlusProche(bot, plateau)));
+		} else if (super.joueurLePlusProche(bot, plateau).size() == 2) {
+			// Joueur a 2 cases de nous : decision avance ou repli
+		} else {
+			// Joueur a cote de nous : decision attaque ou repli
 		}
 	}
 
