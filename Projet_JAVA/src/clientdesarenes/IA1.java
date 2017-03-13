@@ -17,28 +17,11 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
         key = cle;
     }
     
-    @Override
+	@Override
     public Joueur.Action faitUneAction(Plateau t) {           
         Action a = null;
         
-        Point positionJoueur = this.donnePosition();
-        
-        Point destinationDroite = new Point((int) positionJoueur.getX() + 1, (int) positionJoueur.getY());
-        Point destinationGauche = new Point((int) positionJoueur.getX() - 1, (int) positionJoueur.getY());
-        Point destinationHaut = new Point((int) positionJoueur.getX(), (int) positionJoueur.getY() - 1);
-        Point destinationBas = new Point((int) positionJoueur.getX(), (int) positionJoueur.getY() + 1);
-        
-        HashMap listeLivre = t.cherche(positionJoueur, 3, t.CHERCHE_LIVRE);
-        
-        if(!listeLivre.isEmpty()){
-        	ArrayList<Point> arrayPointLivres = (ArrayList<Point>) listeLivre.get(2);
-        	ArrayList<Node> arrayPointChemin = t.donneCheminEntre(positionJoueur, arrayPointLivres.get(0));
-        	System.out.println(arrayPointLivres.get(0));
-        	a = direction(arrayPointChemin.get(0));
-        }
-        
-        
-        int nbrEsprit = this.donneEsprit();
+        /*int nbrEsprit = this.donneEsprit();
         if(nbrEsprit > 80) {
         	
         } else if(nbrEsprit > 50) {
@@ -48,8 +31,9 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
         	
         } else {
         	
-        }
+        }*/
         
+        a = direction(livreLePlusProche(t));
         
         System.out.println("Bot.faitUneAction: Je joue " + a); 
         return a;
@@ -80,14 +64,58 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
         System.out.println("Bot: On est déconnecté du serveur.");
     }
     
+    public Node livreLePlusProche(Plateau t){
+    	HashMap listeLivre;
+    	
+    	Point positionLivre;
+    	
+    	for(int i = 1;;++i){
+    		listeLivre = t.cherche(this.donnePosition(), i, t.CHERCHE_LIVRE);
+    		
+    		if (!listeLivre.isEmpty()) {
+				ArrayList<Point> arrayPointLivres = (ArrayList<Point>) listeLivre.get(2);
+    			for (Point p : arrayPointLivres){
+    				
+    	     		if(t.contientUnLivreQuiNeLuiAppartientPas(this, t.donneContenuCellule(p))){
+    	     			positionLivre = p;
+    	     	     	ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), positionLivre);
+    	     			return arrayPointChemin.get(0);
+    	     		}
+    	     	}
+    		}
+    	}
+    }
+    
+    public Node joueurLePlusProche(Plateau t){
+    	HashMap listeJoueur;
+    	
+    	Point positionJoueur;
+    	
+    	for(int i = 1;;++i){
+    		listeJoueur = t.cherche(this.donnePosition(), i, t.CHERCHE_JOUEUR);
+    		
+    		if (!listeLivre.isEmpty()) {
+				ArrayList<Point> arrayPointLivres = (ArrayList<Point>) listeLivre.get(2);
+    			for (Point p : arrayPointLivres){
+    				
+    	     		if(t.contientUnLivreQuiNeLuiAppartientPas(this, t.donneContenuCellule(p))){
+    	     			positionLivre = p;
+    	     	     	ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), positionLivre);
+    	     			return arrayPointChemin.get(0);
+    	     		}
+    	     	}
+    		}
+    	}
+    }
+    
     public Action direction(Node node){
-    	if (node.getPosX() < this.donnePosition().getX() || node.getPosY() == this.donnePosition().getY()){
+    	if (node.getPosX() < this.donnePosition().getX() && node.getPosY() == this.donnePosition().getY()){
     		return Action.GAUCHE;
-    	} else if (node.getPosX() > this.donnePosition().getX() || node.getPosY() == this.donnePosition().getY()){
+    	} else if (node.getPosX() > this.donnePosition().getX() && node.getPosY() == this.donnePosition().getY()){
     		return Action.DROITE;
-    	} else if (node.getPosX() == this.donnePosition().getX() || node.getPosY() > this.donnePosition().getY()){
+    	} else if (node.getPosX() == this.donnePosition().getX() && node.getPosY() > this.donnePosition().getY()){
     		return Action.BAS;
-    	} else if (node.getPosX() == this.donnePosition().getX() || node.getPosY() < this.donnePosition().getY()){
+    	} else if (node.getPosX() == this.donnePosition().getX() && node.getPosY() < this.donnePosition().getY()){
     		return Action.HAUT;
     	}
     	return null;
