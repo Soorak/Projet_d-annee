@@ -68,7 +68,7 @@ public class GoLivre extends Routine {
 					bot.setAction(super.direction(bot, joueursProches.get(0)));
 				}
 			} else {
-				bot.setAction(super.direction(bot, deplacementVersLivre.get(0)));
+				bot.setAction(Action.RIEN);
 			}
 		} 
 		/**
@@ -88,7 +88,7 @@ public class GoLivre extends Routine {
 		 * Au moins un joueur a cote de nous, on analyse l'etat de ce joueur.
 		 */
 		else {
-			// t'es nické, joueur a cote de nous
+			bot.setAction(super.direction(bot, deplacementVersLivre.get(0)));
 		}
 	}
 

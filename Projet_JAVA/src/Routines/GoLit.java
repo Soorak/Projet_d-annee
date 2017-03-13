@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import clientdesarenes.Bot;
+import jeu.Joueur;
 import jeu.Plateau;
 import jeu.Joueur.Action;
 import jeu.astar.Node;
@@ -45,6 +46,55 @@ public class GoLit extends Routine {
 			// Joueur a 2 cases de nous : decision avance ou repli
 		} else {
 			// Joueur a cote de nous : decision attaque ou repli
+		}
+		
+		
+		ArrayList <Node> deplacementVersLit = litLePlusProche(bot, plateau);
+		
+		Node n = joueursProches.get(joueursProches.size()-1);
+		int posX = n.getPosX();
+		int posY = n.getPosY();
+		Joueur j = plateau.donneJoueurEnPosition(posX,posY);
+
+		/**
+		 * CAS 1 : Standard
+		 * Aucun joueurs a proximite immediate du bot, on poursuit notre objectif initial.
+		 */
+		if(joueursProches.size() > 3) {
+			bot.setAction(super.direction(bot, deplacementVersLit.get(0)));
+		} 
+		/**
+		 * CAS 2 : Joueur dans le perimetre 
+		 * Au moins un joueur dans le perimetre de 3 cases, on analyse l'etat de ce joueur.
+		 */
+		else if (joueursProches.size() == 3) {
+			if(bot.getActions().peek() == Action.RIEN) {
+				bot.setAction(super.direction(bot, deplacementVersLit.get(0)));
+			} else {
+				if(bot.donneEsprit() > 15){
+					bot.setAction(Action.RIEN);
+				} else {
+					bot.setAction(super.direction(bot, deplacementVersLit.get(0)));
+				}
+			}	
+		} 
+		/**
+		 * CAS 3 : Joueur a proximite
+		 * Au moins un joueur a 2 cases, on analyse l'etat de ce joueur.
+		 */
+		else if (joueursProches.size() == 2) {
+			if(j.donneEsprit() <= 20) {
+				bot.setAction(super.direction(bot, joueursProches.get(0)));
+			} else {
+				bot.setAction(super.direction(bot, deplacementVersLit.get(0)));
+			}
+		} 
+		/**
+		 * CAS 4 : Joueur a cote
+		 * Au moins un joueur a cote de nous, on analyse l'etat de ce joueur.
+		 */
+		else {
+			bot.setAction(super.direction(bot, deplacementVersLit.get(0)));
 		}
 	}
 

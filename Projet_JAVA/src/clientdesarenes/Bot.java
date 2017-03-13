@@ -36,7 +36,7 @@ public class Bot extends jeu.Joueur implements reseau.JoueurReseauInterface {
 		this.s.reset();
 		this.s.start();
 		
-		if(donneEsprit() < DistanceLitPlusProche(t) + 20) {
+		if(donneEsprit() < 30) {
 			this.routine = new GoLit(this, t);
 			routine.act();
 		} else {
