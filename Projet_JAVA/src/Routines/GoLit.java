@@ -4,7 +4,6 @@ import java.awt.Point;
 import java.util.ArrayList;
 
 import clientdesarenes.Bot;
-import clientdesarenes.BotJD;
 import jeu.Plateau;
 import jeu.Joueur.Action;
 import jeu.astar.Node;

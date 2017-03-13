@@ -1,7 +1,6 @@
 package Routines;
 
 import clientdesarenes.Bot;
-import clientdesarenes.BotJD;
 import jeu.Plateau;
 import jeu.Joueur.Action;
 import jeu.astar.Node;
