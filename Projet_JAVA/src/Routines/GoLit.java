@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import Routines.Routine;
 import clientdesarenes.Bot;
 import jeu.Plateau;
 import jeu.Joueur.Action;

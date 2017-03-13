@@ -38,6 +38,7 @@ public class JeuSoloLocal {
         
         if(p.donneTourCourant() == 0) {
 	        File dossier = new File("./stats");
+	        if(!dossier.exists()) dossier.mkdir();
 			File[] fichiers = dossier.listFiles();
 			File file = new File("./stats/" + fichiers.length);
 			if(!file.exists()) {

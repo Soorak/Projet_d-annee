@@ -17,7 +17,7 @@ public class Courbe extends Applet {
 		File dossier = new File("../stats/");
 		File[] fichiers = dossier.listFiles();
 		
-		int[][] values = new int[10][300]; // 10 fichier, 301 lignes max
+		int[][] values = new int[50][300]; // 50 fichier max, 301 lignes max
 		int[] sumCult = new int[300]; // 301 valeurs max
 		int[] avgCult = new int[300]; // 301 moyennes max
 		
