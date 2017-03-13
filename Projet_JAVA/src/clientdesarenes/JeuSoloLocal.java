@@ -30,7 +30,7 @@ public class JeuSoloLocal {
             f.setVisible(true);
         });  
         
-        File dossier = new File("./stats");
+        /*File dossier = new File("./stats");
 		File[] fichiers = dossier.listFiles();
 		File file = new File("./stats/" + fichiers.length);
 		if(!file.exists()) {
@@ -39,6 +39,6 @@ public class JeuSoloLocal {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
+		}*/
     }
 }
