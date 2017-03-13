@@ -2,6 +2,7 @@ package Routines;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import clientdesarenes.Bot;
 import jeu.Plateau;
@@ -9,19 +10,37 @@ import jeu.Joueur.Action;
 import jeu.astar.Node;
 
 /**
- * 
- * @author Jeremie Doche
- *
- *
- */
+*
+* Cette classe a pour but de realiser l'objectif : aller vers un lit.
+* Elle prends en compte la proximite avec les autres joueurs.
+*
+* @author  Benjamin Bertrand
+* @author  Valerian Cuq
+* @author  Jeremie Doche
+* @author  Leo Folcher
+* @author  Guillaume Tricaud
+* @author  Geoffrey Vigneau
+* @see     Routine
+*/
 public class GoLit extends Routine {
 
-	public GoLit() {}
+	/**
+	 * 
+	 * @param bot Instance de notre joueur
+	 * @param plateau Instance du plateau de jeu
+	 */
+	public GoLit(Bot bot, Plateau plateau) {
+		super(bot, plateau);
+	}
 
+	/**
+	 * Methode qui definit l'action necessaire pour atteindre l'objectif 
+	 * en s'adaptant en cas de joueurs proches.
+	 */
 	@Override
-	public void act(Bot bot, Plateau plateau) {
+	public void act() {
 		if(super.joueurLePlusProche(bot, plateau).size() > 2) {
-			bot.setAction(super.direction(bot, litLePlusProche(bot, plateau)));
+			
 		} else if (super.joueurLePlusProche(bot, plateau).size() == 2) {
 			// Joueur a 2 cases de nous : decision avance ou repli
 		} else {
@@ -30,18 +49,27 @@ public class GoLit extends Routine {
 	}
 
 	/**
-	 * 
-	 * @param bot Le bot qui va executer la routine
-	 * @param t Le plateau de jeu
-	 * @return
+	 * Retourne un tableau des points constituants le chemin vers le lit le plus proche
+	 * @param bot Instance de notre joueur
+	 * @param t Instance du plateau de jeu
+	 * @return ArrayList<Node> Tableau des points
 	 */
-	public Node litLePlusProche(Bot bot, Plateau t){
-		ArrayList<Point> lits;
-		int taille_recherche = 1;
-		do {
-			lits = t.cherche(bot.donnePosition(), taille_recherche++, Plateau.CHERCHE_LIT).get(1);
-		} while (lits == null || lits.isEmpty());
-		System.err.println("J'ai " + bot.donneEsprit() + "points d'esprit, je vais au lit !");
-		return t.donneCheminEntre(bot.donnePosition(), lits.get(0)).get(0);
-	}
+	public ArrayList<Node> litLePlusProche(Bot bot, Plateau t) {
+		
+    	HashMap listeLit;
+    	Point positionLit;
+    	
+    	for(int i = 1;;++i){
+    		listeLit = t.cherche(bot.donnePosition(), i, t.CHERCHE_LIT);
+    		
+    		if (!listeLit.isEmpty()) {
+				ArrayList<Point> arrayPointLit = (ArrayList<Point>) listeLit.get(1);
+    			for (Point p : arrayPointLit){
+    				positionLit = p;
+	     	     	ArrayList<Node> arrayPointChemin = t.donneCheminEntre(bot.donnePosition(), positionLit);
+	     			return arrayPointChemin;
+    	     	}
+    		}
+    	}
+    }
 }
