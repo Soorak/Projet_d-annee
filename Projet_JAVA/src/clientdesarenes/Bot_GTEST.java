@@ -12,24 +12,29 @@ import jeu.Plateau;
 import jeu.Joueur.Action;
 import jeu.astar.Node;
 
-public class Bot_GT extends jeu.Joueur implements reseau.JoueurReseauInterface {
+public class Bot_GTEST extends Bot {
 
     String key;
     
-    Bot_GT(String id, String cle) {
-        super(id);
+    Bot_GTEST(String id, String cle) {
+        super(id, cle);
         key = cle;
     }
     
     @Override
     public Joueur.Action faitUneAction(Plateau t) {
+    	super.getS().reset();
+    	super.getS().start();
     	Action a = super.faitUneAction(t);
     	if(donneEsprit() < DistanceLitPlusProche(t) + 20) {
     		a = direction(litLePlusProche(t));
     	} else {
-    		a = direction(LivreLePlusProche(t));
+    		
     	}
         System.out.println("Bot.faitUneAction: Je joue " + a);
+        super.setAction(a);
+        super.getS().stop();
+        System.out.println("Temps décision : " + super.getS().getTime(TimeUnit.MILLISECONDS));
         return a;
     }
             
@@ -64,6 +69,7 @@ public class Bot_GT extends jeu.Joueur implements reseau.JoueurReseauInterface {
 		do {
 			lits = t.cherche(this.donnePosition(), taille_recherche++, Plateau.CHERCHE_LIT).get(1);
 		} while (lits == null || lits.isEmpty());
+		System.err.println("J'ai " + donneEsprit() + "points d'esprit, je vais au lit !");
 		return t.donneCheminEntre(this.donnePosition(), lits.get(0)).size();
     }
     
@@ -80,36 +86,6 @@ public class Bot_GT extends jeu.Joueur implements reseau.JoueurReseauInterface {
 		} while (lits == null || lits.isEmpty());
 		System.err.println("J'ai " + donneEsprit() + "points d'esprit, je vais au lit !");
 		return t.donneCheminEntre(this.donnePosition(), lits.get(0)).get(0);
-    }
-    
-    /**
-	 * 
-	 * @param t Le plateau de jeu
-	 * @return
-	 */
-    public Node joueurLePlusProche(Plateau t){
-    	ArrayList<Point> joueur;
-		int taille_recherche = 1;
-		do {
-			joueur = t.cherche(this.donnePosition(), taille_recherche++, Plateau.CHERCHE_JOUEUR).get(4);
-		} while (joueur == null || joueur.isEmpty());
-		System.err.println("Je vais taper un joueur !");
-		return t.donneCheminEntre(this.donnePosition(), joueur.get(0)).get(0);
-    }
-    
-    /**
-	 * 
-	 * @param t Le plateau de jeu
-	 * @return
-	 */
-    public Node LivreLePlusProche(Plateau t){
-    	ArrayList<Point> livre;
-		int taille_recherche = 1;
-		do {
-			livre = t.cherche(this.donnePosition(), taille_recherche++, Plateau.CHERCHE_LIVRE).get(2);
-		} while (livre == null || livre.isEmpty());
-		System.err.println("Je vais m'instruire !");
-		return t.donneCheminEntre(this.donnePosition(), livre.get(0)).get(0);
     }
 	
 	public Action direction(Node node){
