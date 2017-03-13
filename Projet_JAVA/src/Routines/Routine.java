@@ -1,7 +1,10 @@
 package Routines;
 
+import clientdesarenes.Bot;
 import clientdesarenes.BotJD;
 import jeu.Plateau;
+import jeu.Joueur.Action;
+import jeu.astar.Node;
 
 public abstract class Routine {
 
@@ -22,8 +25,21 @@ public abstract class Routine {
 
     public abstract void reset();
 
-    public abstract void act(BotJD droid, Plateau board);
+    public abstract void act(Bot droid, Plateau board);
 
+    public Action direction(Bot bot, Node node){
+    	if (node.getPosX() < bot.donnePosition().getX() && node.getPosY() == bot.donnePosition().getY()){
+    		return Action.GAUCHE;
+    	} else if (node.getPosX() > bot.donnePosition().getX() && node.getPosY() == bot.donnePosition().getY()){
+    		return Action.DROITE;
+    	} else if (node.getPosX() == bot.donnePosition().getX() && node.getPosY() > bot.donnePosition().getY()){
+    		return Action.BAS;
+    	} else if (node.getPosX() == bot.donnePosition().getX() && node.getPosY() < bot.donnePosition().getY()){
+    		return Action.HAUT;
+    	}
+    	return null;
+    }
+    
     protected void succeed() {
         System.out.println(">>> Routine: " + this.getClass().getSimpleName() + " SUCCEEDED");
         this.state = RoutineState.Success;
