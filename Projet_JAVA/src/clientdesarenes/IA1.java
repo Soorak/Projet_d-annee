@@ -23,8 +23,16 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
         
         int nbrEsprit = this.donneEsprit();
         if(nbrEsprit > 80) {
-        	a = direction(livreLePlusProche(t).get(0));
-        } else if(nbrEsprit > 50) {
+        	ArrayList <Node> livre = livreLePlusProche(t);
+        	ArrayList <Node> joueur = joueurLePlusProche(t);
+        	
+        	if (joueur.size() < livre.size() && 
+        			t.donneJoueurEnPosition(joueur.get(joueur.size()).getPosX(), joueur.get(joueur.size()).getPosY()).donneEsprit() < 21){
+        		a = direction(joueur.get(0));
+        	} else {
+        		a = direction(livre.get(0));
+        	}
+        } else if(nbrEsprit > 30) {
         	a = direction(livreLePlusProche(t).get(0));
         }
         else {
