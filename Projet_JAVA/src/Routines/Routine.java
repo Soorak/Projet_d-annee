@@ -89,7 +89,7 @@ public abstract class Routine {
     public abstract ArrayList<Node> litLePlusProche(Bot bot, Plateau t);
     public abstract ArrayList<Node> livreLePlusProche(Bot bot, Plateau t);
     /**
-     * Permet de savoir si la position envoyé est une position adjacente
+     * Permet de savoir si la position envoye est une position adjacente
      */
     public boolean adjacent(Point position){
     	if ((position.getX() == bot.donnePosition().getX() + 1 && position.getY() == bot.donnePosition().getY())

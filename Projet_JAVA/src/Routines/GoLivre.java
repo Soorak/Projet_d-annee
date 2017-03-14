@@ -66,7 +66,7 @@ public class GoLivre extends Routine {
 						&& j.donneEsprit() <= 20 && bot.donneEsprit() > 50) {
 					bot.setAction(super.direction(bot, joueursProches.get(0)));
 				} else {
-					bot.setAction(super.direction(bot, joueursProches.get(0)));
+					bot.setAction(super.direction(bot, deplacementVersLivre.get(0)));
 				}
 			} else {
 				bot.setAction(Action.RIEN);
@@ -86,10 +86,10 @@ public class GoLivre extends Routine {
 		} 
 		/**
 		 * CAS 4 : Joueur a cote
-		 * Au moins un joueur a cote de nous, on analyse l'etat de ce joueur.
+		 * Au moins un joueur a cote de nous, on attaque le joueur.
 		 */
 		else {
-			bot.setAction(super.direction(bot, deplacementVersLivre.get(0)));
+			bot.setAction(super.direction(bot, joueursProches.get(0)));
 		}
 	}
 
@@ -110,7 +110,7 @@ public class GoLivre extends Routine {
     	/** Si on a deja un livre en chasse */
     	if(bot.getLivreChasse() != null) {
     		ArrayList<Node> arrayPointChemin = t.donneCheminEntre(bot.donnePosition(), bot.getLivreChasse());
-    		/** Si le livre en chasse est adjacent, ça veut dire que nous allons l'obtenir au prochain tour,
+    		/** Si le livre en chasse est adjacent, ca veut dire que nous allons l'obtenir au prochain tour,
  		   		On reinitialise donc la variable livreChasse */
     		if(adjacent(bot.getLivreChasse())) {
     			bot.setLivreChasse(null);
@@ -134,7 +134,7 @@ public class GoLivre extends Routine {
         	     				bot.setLivreChasse(null);
             	     			return arrayPointChemin;
         	     			} else {
-        	     				/** Si le le livre est un livre possédé par quelqu'un, on le prend en priorité */
+        	     				/** Si le le livre est un livre possede par quelqu'un, on le prend en priorite */
         	     				if(t.donneProprietaireDuLivre(t.donneContenuCellule(positionLivre)) != 0) {
         	     					positionLivrePossede = p;
         	     				} else {
@@ -143,13 +143,13 @@ public class GoLivre extends Routine {
         	     			}
         	     		}
         	     	}
-        			/** A la fin du parcourt des livres on vérifie vers quel livre on se déplace
-     			   		Si on a trouvé un livre possédé par quelqu'un */
+        			/** A la fin du parcourt des livres on verifie vers quel livre on se deplace
+     			   		Si on a trouve un livre possede par quelqu'un */
         			if (positionLivrePossede != null) {
         				ArrayList<Node> arrayPointChemin = t.donneCheminEntre(bot.donnePosition(), positionLivrePossede);
         				bot.setLivreChasse(positionLivrePossede);
         				return arrayPointChemin;
-        			/** Sinon si on a trouvé un livre Non adjacent */
+        			/** Sinon si on a trouve un livre Non adjacent */
         			} else if(positionLivreNonAdjacent != null) {
         				ArrayList<Node> arrayPointChemin = t.donneCheminEntre(bot.donnePosition(), positionLivreNonAdjacent);
         				bot.setLivreChasse(positionLivreNonAdjacent);

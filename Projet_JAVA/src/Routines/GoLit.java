@@ -86,10 +86,10 @@ public class GoLit extends Routine {
 		} 
 		/**
 		 * CAS 4 : Joueur a cote
-		 * Au moins un joueur a cote de nous, on analyse l'etat de ce joueur.
+		 * Au moins un joueur a cote de nous, on attaque le joueur.
 		 */
 		else {
-			bot.setAction(super.direction(bot, deplacementVersLit.get(0)));
+			bot.setAction(super.direction(bot, joueursProches.get(0)));
 		}
 	}
 
@@ -110,7 +110,7 @@ public class GoLit extends Routine {
     	/** Si on a deja un lit en chasse */
     	if(bot.getLitChasse() != null) {
     		ArrayList<Node> arrayPointChemin = t.donneCheminEntre(bot.donnePosition(), bot.getLitChasse());
-    		/** Si le livre en chasse est adjacent, ça veut dire que nous allons l'obtenir au prochain tour,
+    		/** Si le livre en chasse est adjacent, ca veut dire que nous allons l'obtenir au prochain tour,
  		   		On reinitialise donc la variable livreChasse */
     		if(adjacent(bot.getLitChasse())) {
     			bot.setLitChasse(null);
@@ -126,7 +126,7 @@ public class GoLit extends Routine {
 				/** On parcourt toutes les positions des lits trouves */
     			for (Point p : arrayPointLit){
     				positionLit = p;
-    				/** Si le lit est un lit adjacent, on le prend en priorité */
+    				/** Si le lit est un lit adjacent, on le prend en priorite */
     				if(adjacent(positionLit)){
     					ArrayList<Node> arrayPointChemin = t.donneCheminEntre(bot.donnePosition(), positionLit);
     					bot.setLitChasse(null);
@@ -136,7 +136,7 @@ public class GoLit extends Routine {
     					positionLitNonAdjacent = p;
     				}
     	     	}
-    			/** Si on a trouvé un lit Non adjacent */
+    			/** Si on a trouve un lit Non adjacent */
     			if(positionLitNonAdjacent != null) {
     				ArrayList<Node> arrayPointChemin = t.donneCheminEntre(bot.donnePosition(), positionLitNonAdjacent);
     				bot.setLitChasse(positionLitNonAdjacent);
