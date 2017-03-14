@@ -24,7 +24,7 @@ public class FenetreStats extends JFrame {
 	
 	public FenetreStats() {
 		this.setTitle("Statistiques");
-		this.setSize(800, 800);
+		this.setSize(800, 500);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		left = Box.createVerticalBox();

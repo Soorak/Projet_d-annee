@@ -10,9 +10,7 @@ public class Stats {
         if(!dossier.exists()) dossier.mkdir();
 		File[] fichiers = dossier.listFiles();
 		if(fichiers.length != 0) {
-			for(File f : fichiers) {
-				f.delete();
-			}
+			supp(dossier);
 		}
 		ArrayList<partie> parties = new ArrayList<partie>();
 		for(int i = 0; i < 100; i++) {
@@ -24,6 +22,16 @@ public class Stats {
 		}
 		for(int i = 0; i < parties.size(); i++) {
 			parties.get(i).start();
+		}
+	}
+	
+	public static void supp (File f) {
+		if(f.isDirectory()) {
+			for(File f2 : f.listFiles()) {
+				supp(f2);
+			} 
+		} else {
+			f.delete();
 		}
 	}
 
