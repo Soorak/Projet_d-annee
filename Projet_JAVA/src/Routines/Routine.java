@@ -73,4 +73,22 @@ public abstract class Routine {
     		}
     	}
     }
+    
+    public int rechercheEnvironnement(int type, int taille, Point position, Plateau t){
+    	HashMap liste;
+    	liste = t.cherche(position, taille, type);
+    	return liste.size();
+    }
+    
+    public boolean adjacent(Point position){
+    	if ((position.getX() == bot.donnePosition().getX() + 1 && position.getY() == bot.donnePosition().getY())
+    			|| (position.getX() == bot.donnePosition().getX()-1 && position.getY() == bot.donnePosition().getY()) 
+    			|| (position.getX() == bot.donnePosition().getX() && position.getY() == bot.donnePosition().getY() + 1)
+    			|| (position.getX() == bot.donnePosition().getX() && position.getY() == bot.donnePosition().getY() - 1)){
+    		return true;
+    	}
+    	else {
+    		return false;
+    	}
+    }
 }
