@@ -10,6 +10,7 @@ import Pierrot.PersonnageV2;
 import clientdesarenes.Bot;
 import clientdesarenes.Bot_GT;
 import clientdesarenes.IA1;
+import clientdesarenes.IA2;
 import jeu.Joueur;
 import jeu.MaitreDuJeu;
 import jeu.MaitreDuJeuListener;
@@ -24,9 +25,9 @@ public class JeuSoloLocal {
         
         MaitreDuJeu jeu = new MaitreDuJeu(p);
         
-        jeu.metJoueurEnPosition(0, new IA1("Carapuce", "cli5_PASS5"));
-        jeu.metJoueurEnPosition(1, new Bot("Bulbizarre", "cli4_PASS4"));
-        jeu.metJoueurEnPosition(2, new IA1("Salameche", "cli3_PASS3"));
+        jeu.metJoueurEnPosition(0, new Bot("Carapuce", "cli5_PASS5"));
+        jeu.metJoueurEnPosition(1, new Bot_GT("Bulbizarre", "cli4_PASS4"));
+        jeu.metJoueurEnPosition(2, new IA2("Salameche", "cli3_PASS3"));
         jeu.metJoueurEnPosition(3, new Bot("Pikachu", "cli2_PASS2"));
         
         /*
@@ -78,9 +79,8 @@ public class JeuSoloLocal {
                     }
                     //System.out.println( arg0.donneInfos());
                     //System.exit(0);
-                } else {
-                	recuperer_stats(p, p.donneJoueur(p.donneJoueurCourant()));
-                }
+                } 
+                recuperer_stats(p, p.donneJoueur(p.donneJoueurCourant()));
             }});
         jeu.continueLaPartie(true);
     }

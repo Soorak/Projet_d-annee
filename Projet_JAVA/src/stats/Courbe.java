@@ -3,7 +3,6 @@ package stats;
 import java.applet.Applet;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Label;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,9 +22,9 @@ public class Courbe extends Applet{
 		File dossier = new File("./statistiques/");
 		File[] fichiers = dossier.listFiles();
 		
-		int[][][] values = new int[4][1100][300]; // 4 joueurs, 50 fichier max, 301 lignes max
-		int[][] sumCult = new int[4][300]; // 4 joueurs, 300 valeurs max
-		int[][] avgCult = new int[4][300]; // 4 joueurs, 300 moyennes max
+		int[][][] values = new int[fichiers.length][fichiers[0].listFiles().length][301]; // 4 joueurs, 50 fichier max, 301 lignes max
+		int[][] sumCult = new int[4][301]; // 4 joueurs, 300 valeurs max
+		int[][] avgCult = new int[4][301]; // 4 joueurs, 300 moyennes max
 		
 		String line;
 		for(File dos : fichiers) {
