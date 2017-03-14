@@ -4,6 +4,8 @@ import java.applet.Applet;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Label;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,7 +13,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
-public class Courbe extends Applet {
+public class Courbe extends Applet{
 	
 	private Label l;
 	
@@ -22,7 +24,7 @@ public class Courbe extends Applet {
 	}
 	
 	public void paint(Graphics g) {
-		File dossier = new File("../stats/");
+		File dossier = new File("../statistiques/");
 		File[] fichiers = dossier.listFiles();
 		
 		int[][] values = new int[50][300]; // 50 fichier max, 301 lignes max
@@ -75,11 +77,11 @@ public class Courbe extends Applet {
 		for(int i = 0; i < avgCult.length; i++) {
 			avgCult[i] = sumCult[i] / fichiers.length;
 			if(i != 0) {
-				g.drawLine(avgCult[i-1]/denominateur,(300-(i-1)),avgCult[i]/denominateur,(300-i));
+				g.drawLine((i-1),(plusGrandeValeur-avgCult[i-1])/denominateur,(i),(plusGrandeValeur-avgCult[i])/denominateur);
 			}
 		}
 
-		this.setSize(plusGrandeValeur/denominateur + 20, 320);
+		this.setSize(320, plusGrandeValeur/denominateur + 20);
 		l.setText("Tour 300 : " + plusGrandeValeur + " pts de culture (en moyenne)");
 	}
 }

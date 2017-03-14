@@ -37,10 +37,10 @@ public class JeuSoloLocal {
         */
         
         if(p.donneTourCourant() == 0) {
-	        File dossier = new File("./stats");
+	        File dossier = new File("./statistiques");
 	        if(!dossier.exists()) dossier.mkdir();
 			File[] fichiers = dossier.listFiles();
-			File file = new File("./stats/" + fichiers.length);
+			File file = new File("./statistiques/" + fichiers.length);
 			if(!file.exists()) {
 				try {
 					file.createNewFile();
@@ -69,19 +69,18 @@ public class JeuSoloLocal {
                             + i +": " + arg0.donneJoueur(i).donnePointsCulture());                        
                     }
                     //System.out.println( arg0.donneInfos());
-                    System.exit(0);
+                    //System.exit(0);
                 } else if (p.donneJoueurCourant() == 1){
                 	recuperer_stats(p, p.donneJoueur(1));
                 }
             }});
         jeu.continueLaPartie(true);
-        
     }
     
     public static void recuperer_stats (Plateau t, Joueur joueur) {
-		File dossier = new File("./stats");
+		File dossier = new File("./statistiques");
 		File[] fichiers = dossier.listFiles();
-		File file = new File("./stats/" + (fichiers.length-1));
+		File file = new File("./statistiques/" + (fichiers.length-1));
 		try {
 			FileWriter writer = new FileWriter(file, true);
 			// On récupère les informations (tour, pt culture, pt esprit) du joueur 1
