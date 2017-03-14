@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import Pierrot.PersonnageV1;
-import Pierrot.PersonnageV2;
 import clientdesarenes.Bot;
 import clientdesarenes.Bot_GT;
 import clientdesarenes.IA1;
