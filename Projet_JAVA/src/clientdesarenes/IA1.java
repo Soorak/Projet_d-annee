@@ -74,6 +74,11 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
         System.out.println("Bot: On est d√©connect√© du serveur.");
     }
     
+    /**
+     * Le joueur se met dans une position de chercheur de livre
+     * @param t plateau
+     * @return Action ‡ faire
+     */
     public Action chercheLivre(Plateau t){
     	ArrayList <Node> deplacementVersJoueur = this.joueurLePlusProche(t);
 		ArrayList <Node> deplacementVersLivre = livreLePlusProche(t);
@@ -84,22 +89,31 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
 		Joueur j = t.donneJoueurEnPosition(posX,posY);
 
 		/* -------------------- CASE 1 : Clear --------------------- */
+		/* Si il n'y a pas de joueur ‡ moins de 3 cases, on se dÈplace vers le livre le plus proche */
 		if(deplacementVersJoueur.size() > 3) {
 			return this.direction(deplacementVersLivre.get(0));
 			
 		/* ---------------- CASE 2 : Player 3 cells ---------------- */	
+		/* Sinon si il y a un joueur ‡ 3 cases */
 		} else if (deplacementVersJoueur.size() == 3) {
+			/* Si un livre se trouve ‡ moins de 3 cases on va le chercher */
 			if(deplacementVersLivre.size() <= 3){
 				return this.direction(deplacementVersLivre.get(0));
 			} else {
+				/* Si la derniËre action ÈtÈ de rien faire */
 				if(this.getActions().peek() == Action.RIEN) {
+					/* Si le joueur adverse ‡ plus de points de culture que nous et 
+					 * que son esprit est infÈrieur ‡ 20 et que notre esprit est 
+					 * supÈrieur ‡ 50, on s'approche du joueur */
 					if (j.donnePointsCulture() > this.donnePointsCulture() - 20 
 							&& j.donneEsprit() <= 20 && this.donneEsprit() > 50) {
 						this.livreChasse = null;
 						return this.direction(deplacementVersJoueur.get(0));
+					/* Sinon on se dÈplace vers le livre le plus proche */
 					} else {
 						return this.direction(deplacementVersLivre.get(0));
 					}
+				/* Sinon on ne fait rien */
 				} else {
 					return Action.RIEN;
 				}
