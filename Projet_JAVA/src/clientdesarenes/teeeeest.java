@@ -2,6 +2,8 @@ package clientdesarenes;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import jeu.Joueur;
@@ -13,9 +15,9 @@ public class teeeeest extends jeu.Joueur implements reseau.JoueurReseauInterface
 {
 
 	Plateau t;
-	Point positionJoueur = this.donnePosition();
-	ArrayList<Point> enn_proches = (ArrayList<Point>) t.cherche(positionJoueur, 3, t.CHERCHE_JOUEUR).get(0);
-	Point lit_proche;
+	Point positionJoueur;
+	ArrayList<Point> enn_proches;
+	ArrayList<Point> lit_proche;
 	ArrayList<Point> livre_tres_proche = (ArrayList<Point>) t.cherche(positionJoueur, 3, t.CHERCHE_LIVRE).get(2);
 	Point lit_proche_destination;
 	boolean chemin_lit_ok;
@@ -23,9 +25,12 @@ public class teeeeest extends jeu.Joueur implements reseau.JoueurReseauInterface
 	boolean enn_faible_proche;
 	boolean enn_fragile_proche;
 	int pts_esprit;
-	Point livre_proche = null;
+	ArrayList<Point> livre_proche = null;
 	int nbr_enn_proches;
+	
+	boolean estFaisable;
 
+	//IL FAUT IMPERATIVEMENT TRIER LES LISTE AFIN QUE LE PREMIER ELEMENT RETOURNE SOIT LE PLUS PROCHE DE LA POSITION COURANTE
 	
 	public void play()
 	{
@@ -37,22 +42,51 @@ public class teeeeest extends jeu.Joueur implements reseau.JoueurReseauInterface
         Point destinationBas = new Point((int) positionJoueur.getX(), (int) positionJoueur.getY() + 1);
         
         HashMap listeLivre = t.cherche(positionJoueur, 3, t.CHERCHE_LIVRE);
+        HashMap listeLivreLoin = t.cherche(positionJoueur, 10, t.CHERCHE_LIVRE);
         HashMap listeJoueur = t.cherche(positionJoueur, 3, t.CHERCHE_JOUEUR);
         HashMap listeLit = t.cherche(positionJoueur, 3, t.CHERCHE_LIT);
 		
         if(!listeLivre.isEmpty())
         {
-        	ArrayList<Point> arrayPointLivres = (ArrayList<Point>) listeLivre.get(2);	
+        	ArrayList<Point> arrayPointLivres = (ArrayList<Point>) listeLivre.get(2);
+        	ArrayList<Point> livre_tres_proche = arrayPointLivres;
+        	livre_tres_proche.sort(c);
+        	Collections.sort(livre_tres_proche, new Comparator<Point>() {
+        		@Override
+        		public int compare(Point p1, Point p2)
+        		{
+        			if((positionJoueur.x-p1.x)+(positionJoueur.y-p1.y)>(positionJoueur.x-p2.x)+)
+        			{
+        				return 1;
+        			}
+        			else if()
+        			{
+        				return -1;
+        			}
+        			else
+        			{
+        				return 0;
+        			}
+        		}
+			});
+        }
+        
+        if(!listeLivreLoin.isEmpty())
+        {
+        	ArrayList<Point> arrayPointLivresLoin = (ArrayList<Point>) listeLivreLoin.get(2);
+        	ArrayList<Point> livre_proche = arrayPointLivresLoin;
         }
         
         if(!listeJoueur.isEmpty())
         {
         	ArrayList<Point> arrayPointJoueurs = (ArrayList<Point>) listeJoueur.get(0);
+        	ArrayList<Point> enn_proches = arrayPointJoueurs;
         }
         
         if(!listeLit.isEmpty())
         {
         	ArrayList<Point> arrayPointLits = (ArrayList<Point>) listeLit.get(1);
+        	ArrayList<Point> lit_proche = arrayPointLits;
         }
         
         
