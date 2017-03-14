@@ -1,7 +1,6 @@
 package clientdesarenes;
 
 import java.awt.Point;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -15,10 +14,14 @@ import jeu.Joueur.Action;
 public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
 	String key;
 	Queue<Action> actions = new LinkedList<Action>();
+	Point livreChasse;
+	Point litChasse;
 	
 	IA1(String id, String cle) {
         super(id);
         key = cle;
+        livreChasse = null;
+        litChasse = null;
     }
     
 	@Override
@@ -26,7 +29,9 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
         Action a = null;
         
         ArrayList <Node> deplacementVersLit = litLePlusProche(t);
-        if(this.donneEsprit() < 50 && deplacementVersLit.size() <= 3){
+        ArrayList <Node> deplacementVersLivre = livreLePlusProche(t);
+        
+        if(this.donneEsprit() < 50 && deplacementVersLit.size() <= 3 && deplacementVersLivre.size() > deplacementVersLit.size()){
         	a = chercheLit(t);
         }
         else if(this.donneEsprit() > 20 + deplacementVersLit.size()) {
@@ -142,7 +147,7 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
 		
 		/* ---------------- CASE 3 : Player 2 cells ---------------- */	
 		} else if (deplacementVersJoueur.size() == 2) {
-			if(j.donneEsprit() <= 20) {
+			if(j.donneEsprit() <= 20 && this.donneEsprit() > 20) {
 				return this.direction(deplacementVersJoueur.get(0));
 			} else {
 				return this.direction(deplacementVersLit.get(0));
@@ -157,28 +162,58 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
     public ArrayList<Node> livreLePlusProche(Plateau t){
     	HashMap listeLivre;
     	
-    	Point positionLivre;
+    	this.litChasse = null;
     	
-    	for(int i = 1;;++i){
-    		listeLivre = t.cherche(this.donnePosition(), i, t.CHERCHE_LIVRE);
-    		if (!listeLivre.isEmpty()) {
-				ArrayList<Point> arrayPointLivres = (ArrayList<Point>) listeLivre.get(2);
-    			for (Point p : arrayPointLivres){    				
-    	     		if(t.contientUnLivreQuiNeLuiAppartientPas(this, t.donneContenuCellule(p))){
-    	     			positionLivre = p;
-    	     	     	ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), positionLivre);
-    	     			return arrayPointChemin;
-    	     		}
-    	     	}
+    	Point positionLivre;
+    	Point positionLivreNonAdjacent = null;
+    	if(this.livreChasse != null) {
+    		ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), this.livreChasse);
+    		if(adjacent(this.livreChasse)) {
+    			this.livreChasse = null;
     		}
+    		return arrayPointChemin;
+    	} else {
+    		for(int i = 1;;++i){
+        		listeLivre = t.cherche(this.donnePosition(), i, t.CHERCHE_LIVRE);
+        		if (!listeLivre.isEmpty()) {
+    				ArrayList<Point> arrayPointLivres = (ArrayList<Point>) listeLivre.get(2);
+        			for (Point p : arrayPointLivres){    				
+        	     		if(t.contientUnLivreQuiNeLuiAppartientPas(this, t.donneContenuCellule(p))){
+        	     			positionLivre = p;
+        	     			if (adjacent(positionLivre)){
+        	     				ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), positionLivre);
+        	     				this.livreChasse = null;
+            	     			return arrayPointChemin;
+        	     			} else {
+        	     				positionLivreNonAdjacent = p;
+        	     			}
+        	     		}
+        	     	}
+        			if(positionLivreNonAdjacent != null) {
+        				ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), positionLivreNonAdjacent);
+        				this.livreChasse = positionLivreNonAdjacent;
+        				return arrayPointChemin;
+        			}
+        		}
+        	}
     	}
+    	
     }
     
     public ArrayList<Node> litLePlusProche(Plateau t){
     	HashMap listeLit;
     	
-    	Point positionLit;
+    	this.livreChasse = null;
     	
+    	Point positionLit;
+    	Point positionLitNonAdjacent = null;
+    	if(this.litChasse != null) {
+    		ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), this.litChasse);
+    		if(adjacent(this.litChasse)) {
+    			this.litChasse = null;
+    		}
+    		return arrayPointChemin;
+    	}
     	for(int i = 1;;++i){
     		listeLit = t.cherche(this.donnePosition(), i, t.CHERCHE_LIT);
     		
@@ -186,9 +221,19 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
 				ArrayList<Point> arrayPointLit = (ArrayList<Point>) listeLit.get(1);
     			for (Point p : arrayPointLit){
     				positionLit = p;
-	     	     	ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), positionLit);
-	     			return arrayPointChemin;
+    				if(adjacent(positionLit)){
+    					ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), positionLit);
+    					this.litChasse = null;
+    	     			return arrayPointChemin;
+    				} else {
+    					positionLitNonAdjacent = p;
+    				}
     	     	}
+    			if(positionLitNonAdjacent != null) {
+    				ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), positionLitNonAdjacent);
+    				this.litChasse = positionLitNonAdjacent;
+    				return arrayPointChemin;
+    			}
     		}
     	}
     }
@@ -211,6 +256,18 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
 					}
     	     	}
     		}
+    	}
+    }
+    
+    public boolean adjacent(Point position){
+    	if ((position.getX() == this.donnePosition().getX() + 1 && position.getY() == this.donnePosition().getY())
+    			|| (position.getX() == this.donnePosition().getX()-1 && position.getY() == this.donnePosition().getY()) 
+    			|| (position.getX() == this.donnePosition().getX() && position.getY() == this.donnePosition().getY() + 1)
+    			|| (position.getX() == this.donnePosition().getX() && position.getY() == this.donnePosition().getY() - 1)){
+    		return true;
+    	}
+    	else {
+    		return false;
     	}
     }
     
