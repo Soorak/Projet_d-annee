@@ -15,7 +15,7 @@ public class Stats {
 			}
 		}
 		ArrayList<partie> parties = new ArrayList<partie>();
-		for(int i = 0; i < 50; i++) {
+		for(int i = 0; i < 100; i++) {
 			if(i == 0) {
 				parties.add(new partie(args, i));
 			} else {

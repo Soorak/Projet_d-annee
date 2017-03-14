@@ -23,12 +23,12 @@ public class partie extends Thread {
 				if(tour == numThread) {
 					System.err.println("Je joue le thread " + numThread);
 					JeuSoloLocal.main(args);
-					this.sleep(800);
+					this.sleep(1000);
 					tour++;
 					if(tour == nbThread) new FenetreStats();
 					break;
 				} else {
-					this.sleep(800);
+					this.sleep(1000);
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();

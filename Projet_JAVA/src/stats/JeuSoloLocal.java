@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import Pierrot.PersonnageV1;
 import Pierrot.PersonnageV2;
+import clientdesarenes.Bot;
 import clientdesarenes.Bot_GT;
 import clientdesarenes.IA1;
 import jeu.Joueur;
@@ -24,9 +25,9 @@ public class JeuSoloLocal {
         MaitreDuJeu jeu = new MaitreDuJeu(p);
         
         jeu.metJoueurEnPosition(0, new IA1("Carapuce", "cli5_PASS5"));
-        jeu.metJoueurEnPosition(1, new Bot_GT("Bulbizarre", "cli4_PASS4"));
-        jeu.metJoueurEnPosition(2, new PersonnageV1("Salameche", "cli3_PASS3"));
-        jeu.metJoueurEnPosition(3, new PersonnageV2("Pikachu", "cli2_PASS2"));
+        jeu.metJoueurEnPosition(1, new Bot("Bulbizarre", "cli4_PASS4"));
+        jeu.metJoueurEnPosition(2, new IA1("Salameche", "cli3_PASS3"));
+        jeu.metJoueurEnPosition(3, new Bot("Pikachu", "cli2_PASS2"));
         
         /*
         FenetreDeJeu f = new FenetreDeJeu(jeu, true);
