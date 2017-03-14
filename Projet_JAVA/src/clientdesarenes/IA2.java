@@ -18,7 +18,7 @@ public class IA2 extends jeu.Joueur implements reseau.JoueurReseauInterface {
 	Point livreChasse;
 	Point litChasse;
 	
-	IA2(String id, String cle) {
+	public IA2(String id, String cle) {
         super(id);
         key = cle;
         livreChasse = null;
@@ -82,15 +82,31 @@ public class IA2 extends jeu.Joueur implements reseau.JoueurReseauInterface {
 		int posY = n.getPosY();
 		Joueur j = t.donneJoueurEnPosition(posX,posY);
 		
-		Point pFort = new Point(deplacementVersJoueurFort.get(deplacementVersJoueurFort.size()-1).getPosX(),deplacementVersJoueurFort.get(deplacementVersJoueurFort.size()-1).getPosY());
-		Point pRiche = new Point(deplacementVersJoueurRiche.get(deplacementVersJoueurRiche.size()-1).getPosX(),deplacementVersJoueurRiche.get(deplacementVersJoueurRiche.size()-1).getPosY());
+		Point pFort = null;
+		if(deplacementVersJoueurFort!=null&&deplacementVersJoueurFort.size()>0)
+		{
+			Node F = deplacementVersJoueurFort.get(deplacementVersJoueurFort.size()-1);
+			int posXF = F.getPosX();
+			int posYF = F.getPosY();
+			pFort = new Point(posXF,posYF);
+		}
 		
-		if(deplacementVersJoueurFort.size()<4&&!chercheLitProche(t, pFort)&&t.donneJoueurEnPosition(pFort).donneEsprit()+20<this.donneEsprit())
+		Point pRiche = null;
+		if(deplacementVersJoueurRiche!=null&&deplacementVersJoueurRiche.size()>0)
+		{
+			Node R = deplacementVersJoueurRiche.get(deplacementVersJoueurRiche.size()-1);
+			int posXR = R.getPosX();
+			int posYR = R.getPosY();
+			pRiche = new Point(posXR,posYR);
+		}
+		
+		
+		if(pFort!=null&&deplacementVersJoueurFort.size()<4&&!chercheLitProche(t, pFort)&&t.donneJoueurEnPosition(pFort).donneEsprit()+20<this.donneEsprit())
 		{
 			return this.direction(deplacementVersJoueurFort.get(0));
 		}
 		
-		if(chercheRicheProche(t)||!chercheLitProche(t, pRiche))
+		if(pRiche!=null&&(chercheRicheProche(t)&&!chercheLitProche(t, pRiche)))
 		{
 			return this.direction(deplacementVersJoueurRiche.get(0));
 		}
@@ -138,9 +154,8 @@ public class IA2 extends jeu.Joueur implements reseau.JoueurReseauInterface {
     
     public boolean chercheLitProche(Plateau t,Point p)
     {
-    	HashMap listeLitProche;
-    	listeLitProche = t.cherche(p, 3, t.CHERCHE_LIT);
-    	if(!listeLitProche.isEmpty())
+    	HashMap listeLitProche = t.cherche(p, 3, Plateau.CHERCHE_LIT);
+    	if(listeLitProche != null || !listeLitProche.isEmpty())
     	{
     		return true;
     	}
@@ -191,7 +206,7 @@ public class IA2 extends jeu.Joueur implements reseau.JoueurReseauInterface {
     }
     
     public ArrayList<Node> livreLePlusProche(Plateau t){
-    	HashMap listeLivre;
+    	HashMap listeLivre = new HashMap<>();
     	
     	this.litChasse = null;
     	
@@ -242,7 +257,7 @@ public class IA2 extends jeu.Joueur implements reseau.JoueurReseauInterface {
     }
     
     public ArrayList<Node> litLePlusProche(Plateau t){
-    	HashMap listeLit;
+    	HashMap listeLit = new HashMap<>();
     	
     	this.livreChasse = null;
     	
@@ -280,7 +295,7 @@ public class IA2 extends jeu.Joueur implements reseau.JoueurReseauInterface {
     }
     
     public ArrayList<Node> joueurLePlusProche(Plateau t){
-    	HashMap listeJoueur;
+    	HashMap listeJoueur = new HashMap<>();
     	
     	Point positionJoueur;
     	
@@ -302,7 +317,7 @@ public class IA2 extends jeu.Joueur implements reseau.JoueurReseauInterface {
     
     public ArrayList<Node> JoueurFortProche(Plateau t)
 	{
-		HashMap listeTousJoueur;
+		HashMap listeTousJoueur = new HashMap<>();
 		Joueur joueurLePlusFort = new Joueur();
 		Point positionJoueurLePlusFort = new Point(0,0);
 
@@ -310,10 +325,14 @@ public class IA2 extends jeu.Joueur implements reseau.JoueurReseauInterface {
 		ArrayList<Point> arrayTousJoueur = (ArrayList<Point>) listeTousJoueur.get(4);
 		for (Point p : arrayTousJoueur) {
 			Joueur temp = t.donneJoueurEnPosition(p);
-			if(joueurLePlusFort.donnePointsCulture()<temp.donnePointsCulture()&&p!=this.donnePosition())
+			
+			if(p!=this.donnePosition())
 			{
-				joueurLePlusFort=temp;
-				positionJoueurLePlusFort = p;
+				if(joueurLePlusFort.donnePointsCulture()<temp.donnePointsCulture())
+				{
+					joueurLePlusFort=temp;
+					positionJoueurLePlusFort = p;
+				}
 			}
 
 		}
@@ -323,25 +342,49 @@ public class IA2 extends jeu.Joueur implements reseau.JoueurReseauInterface {
     
     public ArrayList<Node> JoueurRicheProche(Plateau t)
     {
-    	HashMap listeTousJoueur;
+    	HashMap listeTousJoueur = new HashMap<>();
 		Joueur joueurLePlusRiche = new Joueur();
-		Point positionJoueurLePlusRiche = new Point(0,0);
+		Point positionInitiale = new Point(0,0);
 		int numeroJoueur = 0;
 		int nbrLivrePlusRiche = 5;
 		int distanceActuelleAvecFort = 5;
 
-		listeTousJoueur = t.cherche(positionJoueurLePlusRiche, t.donneTaille(), t.CHERCHE_JOUEUR);
+		listeTousJoueur = t.cherche(positionInitiale, t.donneTaille(), t.CHERCHE_JOUEUR);
 		ArrayList<Point> arrayTousJoueur = (ArrayList<Point>) listeTousJoueur.get(4);
 		
+		for (int i = 0; i < arrayTousJoueur.size(); i++) {
+			if(arrayTousJoueur.get(i)==this.donnePosition())
+			{
+				arrayTousJoueur.remove(i);
+				break;
+			}
+		}
+		
+		Point positionJoueurLePlusRiche = arrayTousJoueur.get(0);
 		
 		for (Point p : arrayTousJoueur) {
 			Joueur temp = t.donneJoueurEnPosition(p);
 			numeroJoueur = temp.donneCouleurNumerique();
-			if((t.nombreDeLivresJoueur(numeroJoueur)>nbrLivrePlusRiche&&p!=this.donnePosition()&&t.donneCheminEntre(this.donnePosition(), p).size()<5)||(this.donnePosition()!=p&&((t.donneCheminEntre(this.donnePosition(), positionJoueurLePlusRiche).size())-(t.donneCheminEntre(this.donnePosition(), p).size()))<((nbrLivrePlusRiche)-(t.nombreDeLivresJoueur(numeroJoueur)))))
+			int distanceAvecLePlusRiche = (t.donneCheminEntre(this.donnePosition(), positionJoueurLePlusRiche).size());
+			int distanceAvecActuel = (t.donneCheminEntre(this.donnePosition(), p).size());
+			
+			if(p!=this.donnePosition())
 			{
-				nbrLivrePlusRiche = t.nombreDeLivresJoueur(numeroJoueur);
-				joueurLePlusRiche=temp;
-				positionJoueurLePlusRiche = p;
+				if(t.nombreDeLivresJoueur(numeroJoueur)>nbrLivrePlusRiche&&t.donneCheminEntre(this.donnePosition(), p).size()<distanceActuelleAvecFort)
+				{
+					nbrLivrePlusRiche = t.nombreDeLivresJoueur(numeroJoueur);
+					joueurLePlusRiche=temp;
+					positionJoueurLePlusRiche = p;
+					distanceActuelleAvecFort = t.donneCheminEntre(this.donnePosition(), p).size();
+					
+				}
+				else if((distanceAvecLePlusRiche-distanceAvecActuel<((t.nombreDeLivresJoueur(numeroJoueur))-(nbrLivrePlusRiche))))
+				{
+					nbrLivrePlusRiche = t.nombreDeLivresJoueur(numeroJoueur);
+					joueurLePlusRiche=temp;
+					positionJoueurLePlusRiche = p;
+					distanceActuelleAvecFort = t.donneCheminEntre(this.donnePosition(), p).size();
+				}
 			}
 
 		}
@@ -351,7 +394,7 @@ public class IA2 extends jeu.Joueur implements reseau.JoueurReseauInterface {
     
     public boolean chercheRicheProche(Plateau t)
     {
-    	HashMap listeJoueurProche;
+    	HashMap listeJoueurProche = new HashMap<>();
     	int numeroJoueur = 0;
     	
     	listeJoueurProche = t.cherche(this.donnePosition(), 5, t.CHERCHE_JOUEUR);
