@@ -79,6 +79,10 @@ public class Bot extends jeu.Joueur implements reseau.JoueurReseauInterface {
 
 	@Override
 	public void finDeLaPartie(Plateau t) {
+    	Queue<Action> actions = new LinkedList<Action>();
+    	actions = null;
+    	livreChasse = null;
+        litChasse = null;
 		System.out.println("Bot: La partie est finie.");
 	}
 
@@ -116,11 +120,9 @@ public class Bot extends jeu.Joueur implements reseau.JoueurReseauInterface {
     	HashMap listeJoueur;
     	
     	Point positionJoueur;
-    	
     	for(int i = 1;;++i){
     		listeJoueur = t.cherche(this.donnePosition(), i, t.CHERCHE_JOUEUR);
     		if (!listeJoueur.isEmpty()) {
-    			
 				ArrayList<Point> arrayPointJoueur = (ArrayList<Point>) listeJoueur.get(4);
     			for (Point p : arrayPointJoueur){
 					positionJoueur = p;
