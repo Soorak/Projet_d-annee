@@ -19,7 +19,7 @@ public class Bot_GT extends jeu.Joueur implements reseau.JoueurReseauInterface {
 
     String key;
     
-    Bot_GT(String id, String cle) {
+    public Bot_GT(String id, String cle) {
         super(id);
         key = cle;
     }
@@ -163,7 +163,6 @@ public class Bot_GT extends jeu.Joueur implements reseau.JoueurReseauInterface {
 	}
 	
 	public boolean possibleChercherLivre(Point livre, Point lit, int esprit, Plateau t) {
-		System.err.println(joueurLePlusProche(t));
 		t.donneGrillePourAstar();
 		ArrayList<Node> cheminLivre = t.donneCheminAvecObstaclesSupplementaires(this.donnePosition(), livre, joueurLePlusProche(t));
 		int dstLitDepuisLit = t.donneCheminEntre(livre, lit).size();

@@ -17,7 +17,7 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
 	Point livreChasse;
 	Point litChasse;
 	
-	IA1(String id, String cle) {
+	public IA1(String id, String cle) {
         super(id);
         key = cle;
         livreChasse = null;

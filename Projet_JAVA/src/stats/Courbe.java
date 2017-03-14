@@ -13,19 +13,17 @@ import java.nio.charset.Charset;
 
 public class Courbe extends Applet{
 	
-	private Label l;
-	
-	public void init () {
-		l = new Label();
-		l.setBackground(new Color(132,179,255));
-		this.add(l);
-	}
+	private int plusGrandeValeurBleu;
+	private int plusGrandeValeurVert;
+	private int plusGrandeValeurRouge;
+	private int plusGrandeValeurJaune;
 	
 	public void paint(Graphics g) {
-		File dossier = new File("../statistiques/");
+		plusGrandeValeurBleu = 0;
+		File dossier = new File("./statistiques/");
 		File[] fichiers = dossier.listFiles();
 		
-		int[][][] values = new int[4][51][300]; // 4 joueurs, 50 fichier max, 301 lignes max
+		int[][][] values = new int[4][1100][300]; // 4 joueurs, 50 fichier max, 301 lignes max
 		int[][] sumCult = new int[4][300]; // 4 joueurs, 300 valeurs max
 		int[][] avgCult = new int[4][300]; // 4 joueurs, 300 moyennes max
 		
@@ -63,6 +61,21 @@ public class Courbe extends Applet{
 			for(int j = 0; j < avgCult[i].length; j++) {
 				avgCult[i][j] = sumCult[i][j] / fichiers.length;
 				if(avgCult[i][j] > plusGrandeValeur) plusGrandeValeur = avgCult[i][j];
+				switch (i){
+					case 0 :
+						if(avgCult[i][j] > plusGrandeValeurBleu) plusGrandeValeurBleu = avgCult[i][j];
+						break;
+					case 1 :
+						if(avgCult[i][j] > plusGrandeValeurVert) plusGrandeValeurVert = avgCult[i][j];
+						break;
+					case 2 :
+						if(avgCult[i][j] > plusGrandeValeurRouge) plusGrandeValeurRouge = avgCult[i][j];
+						break;
+					case 3 :
+						if(avgCult[i][j] > plusGrandeValeurJaune) plusGrandeValeurJaune = avgCult[i][j];
+						break;
+				}
+				
 			}
 		}
 		
@@ -103,6 +116,21 @@ public class Courbe extends Applet{
 		}
 
 		this.setSize(320, plusGrandeValeur/denominateur + 20);
-		l.setText("Tour 300 : " + plusGrandeValeur + " pts de culture (en moyenne)");
+	}
+
+	public int getPlusGrandeValeurVert() {
+		return plusGrandeValeurVert;
+	}
+
+	public int getPlusGrandeValeurRouge() {
+		return plusGrandeValeurRouge;
+	}
+
+	public int getPlusGrandeValeurJaune() {
+		return plusGrandeValeurJaune;
+	}
+
+	public int getPlusGrandeValeurBleu() {
+		return plusGrandeValeurBleu;
 	}
 }
