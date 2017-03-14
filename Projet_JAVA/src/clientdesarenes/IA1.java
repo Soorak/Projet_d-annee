@@ -62,6 +62,10 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
 
     @Override
     public void finDeLaPartie(Plateau t) {
+    	Queue<Action> actions = new LinkedList<Action>();
+    	actions = null;
+    	livreChasse = null;
+        litChasse = null;
         System.out.println("Bot: La partie est finie.");
     }
 
@@ -91,6 +95,7 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
 				if(this.getActions().peek() == Action.RIEN) {
 					if (j.donnePointsCulture() > this.donnePointsCulture() - 20 
 							&& j.donneEsprit() <= 20 && this.donneEsprit() > 50) {
+						this.livreChasse = null;
 						return this.direction(deplacementVersJoueur.get(0));
 					} else {
 						return this.direction(deplacementVersLivre.get(0));
@@ -109,6 +114,7 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
 					(j.donnePointsCulture() > this.donnePointsCulture() - 20 
 								&& j.donneEsprit() < this.donneEsprit()) 
 						|| j.donneEsprit() <= 20) {
+					this.livreChasse = null;
 					return this.direction(deplacementVersJoueur.get(0));
 				}
 			}
@@ -148,6 +154,7 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
 		/* ---------------- CASE 3 : Player 2 cells ---------------- */	
 		} else if (deplacementVersJoueur.size() == 2) {
 			if(j.donneEsprit() <= 20 && this.donneEsprit() > 20) {
+				this.litChasse = null;
 				return this.direction(deplacementVersJoueur.get(0));
 			} else {
 				return this.direction(deplacementVersLit.get(0));
@@ -159,7 +166,12 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
 		}
     }
     
+    /*
+     * Permet de récupérer le livre le plus proche suivant certains critères
+     */
     public ArrayList<Node> livreLePlusProche(Plateau t){
+    	int flag;
+    	
     	HashMap listeLivre;
     	
     	this.litChasse = null;
@@ -168,25 +180,34 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
     	Point positionLivreNonAdjacent = null;
     	Point positionLivrePossede = null;
     	
+    	//Si on a deja un livre en chasse
     	if(this.livreChasse != null) {
     		ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), this.livreChasse);
+    		//Si le livre en chasse est adjacent, ça veut dire que nous allons l'obtenir au prochain tour,
+    		//On réinitialise donc la variable livreChasse
     		if(adjacent(this.livreChasse)) {
     			this.livreChasse = null;
     		}
     		return arrayPointChemin;
     	} else {
+    		//On parcours les alentours de la map pour trouver des livres
     		for(int i = 1;;++i){
         		listeLivre = t.cherche(this.donnePosition(), i, t.CHERCHE_LIVRE);
+        		//Si on a trouvé des livres aux alentours
         		if (!listeLivre.isEmpty()) {
     				ArrayList<Point> arrayPointLivres = (ArrayList<Point>) listeLivre.get(2);
-        			for (Point p : arrayPointLivres){    				
+    				//On parcourt toutes les positions des livres trouvé
+        			for (Point p : arrayPointLivres) {
+        				//Si le livre ne nous appartient pas déjà
         	     		if(t.contientUnLivreQuiNeLuiAppartientPas(this, t.donneContenuCellule(p))){
         	     			positionLivre = p;
+        	     			//Si le livre est un livre adjacent, on le prend en priorité
         	     			if (adjacent(positionLivre)){
         	     				ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), positionLivre);
         	     				this.livreChasse = null;
             	     			return arrayPointChemin;
         	     			} else {
+        	     				//Si le le livre est un livre possédé par quelqu'un, on le prend en priorité
         	     				if(t.donneProprietaireDuLivre(t.donneContenuCellule(positionLivre)) != 0) {
         	     					positionLivrePossede = p;
         	     				} else {
@@ -195,19 +216,27 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
         	     			}
         	     		}
         	     	}
+        			//A la fin du parcourt des livres on vérifie vers quel livre on se déplace
+        			//Si on a trouvé un livre possédé par quelqu'un
         			if (positionLivrePossede != null) {
         				ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), positionLivrePossede);
         				this.livreChasse = positionLivrePossede;
         				return arrayPointChemin;
+        			//Sinon si on a trouvé un livre Non adjacent
         			} else if(positionLivreNonAdjacent != null) {
         				ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), positionLivreNonAdjacent);
         				this.livreChasse = positionLivreNonAdjacent;
         				return arrayPointChemin;
         			}
         		}
-        	}
+        	}//end for
     	}
-    	
+    }
+    
+    public int rechercheEnvironnement(int type, int taille, Point position, Plateau t){
+    	HashMap liste;
+    	liste = t.cherche(position, taille, type);
+    	return liste.size();
     }
     
     public ArrayList<Node> litLePlusProche(Plateau t){
