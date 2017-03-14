@@ -77,8 +77,9 @@ public class JeuSoloLocal {
                     }
                     //System.out.println( arg0.donneInfos());
                     //System.exit(0);
-                } 
-                recuperer_stats(p, p.donneJoueur(p.donneJoueurCourant()));
+                } else {
+                	recuperer_stats(p, p.donneJoueur(p.donneJoueurCourant()));
+                }
             }});
         jeu.continueLaPartie(true);
     }
