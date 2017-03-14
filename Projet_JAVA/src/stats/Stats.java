@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class Stats {
 
 	public static void main(String[] args) {
-		File dossier = new File("./statistiques");
+		File dossier = new File("./statistiques/");
         if(!dossier.exists()) dossier.mkdir();
 		File[] fichiers = dossier.listFiles();
 		if(fichiers.length != 0) {
