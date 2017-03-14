@@ -166,6 +166,8 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
     	
     	Point positionLivre;
     	Point positionLivreNonAdjacent = null;
+    	Point positionLivrePossede = null;
+    	
     	if(this.livreChasse != null) {
     		ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), this.livreChasse);
     		if(adjacent(this.livreChasse)) {
@@ -185,11 +187,19 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
         	     				this.livreChasse = null;
             	     			return arrayPointChemin;
         	     			} else {
-        	     				positionLivreNonAdjacent = p;
+        	     				if(t.donneProprietaireDuLivre(t.donneContenuCellule(positionLivre)) != 0) {
+        	     					positionLivrePossede = p;
+        	     				} else {
+        	     					positionLivreNonAdjacent = p;
+        	     				}
         	     			}
         	     		}
         	     	}
-        			if(positionLivreNonAdjacent != null) {
+        			if (positionLivrePossede != null) {
+        				ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), positionLivrePossede);
+        				this.livreChasse = positionLivrePossede;
+        				return arrayPointChemin;
+        			} else if(positionLivreNonAdjacent != null) {
         				ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), positionLivreNonAdjacent);
         				this.livreChasse = positionLivreNonAdjacent;
         				return arrayPointChemin;
