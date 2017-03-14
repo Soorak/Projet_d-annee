@@ -9,6 +9,18 @@ import jeu.Plateau;
 import jeu.Joueur.Action;
 import jeu.astar.Node;
 
+/**
+*
+* C'est une classe abstraite qui permet d'implementer un comportement 
+*
+* @author  Benjamin Bertrand
+* @author  Valerian Cuq
+* @author  Jeremie Doche
+* @author  Leo Folcher
+* @author  Guillaume Tricaud
+* @author  Geoffrey Vigneau
+* @see     Routine
+*/
 public abstract class Routine {
 
     protected Bot bot;
@@ -74,12 +86,11 @@ public abstract class Routine {
     	}
     }
     
-    public int rechercheEnvironnement(int type, int taille, Point position, Plateau t){
-    	HashMap liste;
-    	liste = t.cherche(position, taille, type);
-    	return liste.size();
-    }
-    
+    public abstract ArrayList<Node> litLePlusProche(Bot bot, Plateau t);
+    public abstract ArrayList<Node> livreLePlusProche(Bot bot, Plateau t);
+    /**
+     * Permet de savoir si la position envoyé est une position adjacente
+     */
     public boolean adjacent(Point position){
     	if ((position.getX() == bot.donnePosition().getX() + 1 && position.getY() == bot.donnePosition().getY())
     			|| (position.getX() == bot.donnePosition().getX()-1 && position.getY() == bot.donnePosition().getY()) 

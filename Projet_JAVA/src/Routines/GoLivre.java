@@ -60,6 +60,7 @@ public class GoLivre extends Routine {
 		 * Au moins un joueur dans le perimetre de 3 cases, on analyse l'etat de ce joueur.
 		 */
 		else if (super.joueursProches.size() == 3) {
+			System.out.println(bot.getActions().peek());
 			if(bot.getActions().peek() == Action.RIEN) {
 				if (j.donnePointsCulture() > bot.donnePointsCulture() - 20 
 						&& j.donneEsprit() <= 20 && bot.donneEsprit() > 50) {
@@ -98,33 +99,42 @@ public class GoLivre extends Routine {
 	 * @param t Instance du plateau de jeu
 	 * @return ArrayList<Node> Tableau des points
 	 */
+	@Override
 	public ArrayList<Node> livreLePlusProche(Bot bot, Plateau t){
-    	int flag;
     	HashMap listeLivre;
     	bot.setLitChasse(null);
     	Point positionLivre;
     	Point positionLivreNonAdjacent = null;
     	Point positionLivrePossede = null;
 
+    	/** Si on a deja un livre en chasse */
     	if(bot.getLivreChasse() != null) {
     		ArrayList<Node> arrayPointChemin = t.donneCheminEntre(bot.donnePosition(), bot.getLivreChasse());
+    		/** Si le livre en chasse est adjacent, ça veut dire que nous allons l'obtenir au prochain tour,
+ 		   		On reinitialise donc la variable livreChasse */
     		if(adjacent(bot.getLivreChasse())) {
     			bot.setLivreChasse(null);
     		}
     		return arrayPointChemin;
     	} else {
+    		/** On parcours les alentours de la map pour trouver des livres */
     		for(int i = 1;;++i){
         		listeLivre = t.cherche(bot.donnePosition(), i, t.CHERCHE_LIVRE);
+        		/** Si on a trouve des livres aux alentours */
         		if (!listeLivre.isEmpty()) {
     				ArrayList<Point> arrayPointLivres = (ArrayList<Point>) listeLivre.get(2);
+    				/** On parcourt toutes les positions des livres trouve */
         			for (Point p : arrayPointLivres) {
+        				/** Si le livre ne nous appartient pas deja */
         	     		if(t.contientUnLivreQuiNeLuiAppartientPas(bot, t.donneContenuCellule(p))){
         	     			positionLivre = p;
+        	     			/** Si le livre est un livre adjacent, on le prend en priorite */
         	     			if (adjacent(positionLivre)){
         	     				ArrayList<Node> arrayPointChemin = t.donneCheminEntre(bot.donnePosition(), positionLivre);
         	     				bot.setLivreChasse(null);
             	     			return arrayPointChemin;
         	     			} else {
+        	     				/** Si le le livre est un livre possédé par quelqu'un, on le prend en priorité */
         	     				if(t.donneProprietaireDuLivre(t.donneContenuCellule(positionLivre)) != 0) {
         	     					positionLivrePossede = p;
         	     				} else {
@@ -133,10 +143,13 @@ public class GoLivre extends Routine {
         	     			}
         	     		}
         	     	}
+        			/** A la fin du parcourt des livres on vérifie vers quel livre on se déplace
+     			   		Si on a trouvé un livre possédé par quelqu'un */
         			if (positionLivrePossede != null) {
         				ArrayList<Node> arrayPointChemin = t.donneCheminEntre(bot.donnePosition(), positionLivrePossede);
         				bot.setLivreChasse(positionLivrePossede);
         				return arrayPointChemin;
+        			/** Sinon si on a trouvé un livre Non adjacent */
         			} else if(positionLivreNonAdjacent != null) {
         				ArrayList<Node> arrayPointChemin = t.donneCheminEntre(bot.donnePosition(), positionLivreNonAdjacent);
         				bot.setLivreChasse(positionLivreNonAdjacent);
@@ -147,4 +160,8 @@ public class GoLivre extends Routine {
     	}
     }
 
+	@Override
+	public ArrayList<Node> litLePlusProche(Bot bot, Plateau t) {
+		return null;
+	}
 }
