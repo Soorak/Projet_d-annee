@@ -1,6 +1,9 @@
 package clientdesarenes;
 
 import java.awt.Point;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
@@ -24,12 +27,21 @@ public class Bot_GT extends jeu.Joueur implements reseau.JoueurReseauInterface {
     @Override
     public Joueur.Action faitUneAction(Plateau t) {
     	Action a = null;
-    	if(donneEsprit() < DistanceLitPlusProche(t) + 40) {
-    		a = direction(litLePlusProche(t).get(0));
-    	} else {
-    		a = direction(livreLePlusProche(t).get(0));
+    	try {
+	    	int ptEsprit = donneEsprit();
+	    	Point litProche = litLePlusProche(t);
+	    	Point livreProche = livreLePlusProche_V2(t);
+	    	if(possibleChercherLivre(livreProche, litProche, ptEsprit, t)) {
+	    		//a = direction(t.donneCheminAvecObstacleSupplementaires(this.donnePosition(), livreProche, joueurLePlusProche(t)).get(0));
+	    		a = direction(t.donneCheminEntre(this.donnePosition(), livreProche).get(0));
+	    	} else {
+	    		//a = direction(t.donneCheminAvecObstacleSupplementaires(this.donnePosition(), litProche, joueurLePlusProche(t)).get(0));
+	    		a = direction(t.donneCheminEntre(this.donnePosition(), litProche).get(0));
+	    	}
+	        System.out.println("Bot.faitUneAction: Je joue " + a);
+    	} catch (NullPointerException e) {
+    		e.printStackTrace();
     	}
-        System.out.println("Bot.faitUneAction: Je joue " + a);
         return a;
     }
             
@@ -67,32 +79,28 @@ public class Bot_GT extends jeu.Joueur implements reseau.JoueurReseauInterface {
 		return t.donneCheminEntre(this.donnePosition(), lits.get(0)).size();
     }
     
-    public ArrayList<Node> litLePlusProche(Plateau t){
-    	HashMap listeLit;
-    	
-    	Point positionLit;
+    public Point litLePlusProche(Plateau t){
+    	HashMap<Integer,ArrayList<Point>> listeLit;
     	
     	for(int i = 1;;++i){
-    		listeLit = t.cherche(this.donnePosition(), i, t.CHERCHE_LIT);
+    		listeLit = t.cherche(this.donnePosition(), i, Plateau.CHERCHE_LIT);
     		
     		if (!listeLit.isEmpty()) {
 				ArrayList<Point> arrayPointLit = (ArrayList<Point>) listeLit.get(1);
     			for (Point p : arrayPointLit){
-    				positionLit = p;
-	     	     	ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), positionLit);
-	     			return arrayPointChemin;
+	     			return p;
     	     	}
     		}
     	}
     }
     
     public ArrayList<Node> joueurLePlusProche(Plateau t){
-    	HashMap listeJoueur;
+    	HashMap<Integer,ArrayList<Point>> listeJoueur;
     	
     	Point positionJoueur;
     	
     	for(int i = 1;;++i){
-    		listeJoueur = t.cherche(this.donnePosition(), i, t.CHERCHE_JOUEUR);
+    		listeJoueur = t.cherche(this.donnePosition(), i, Plateau.CHERCHE_JOUEUR);
     		if (!listeJoueur.isEmpty()) {
     			
 				ArrayList<Point> arrayPointJoueur = (ArrayList<Point>) listeJoueur.get(4);
@@ -108,7 +116,7 @@ public class Bot_GT extends jeu.Joueur implements reseau.JoueurReseauInterface {
     }
     
     public ArrayList<Node> livreLePlusProche(Plateau t){
-    	HashMap listeLivre;
+    	HashMap<Integer,ArrayList<Point>> listeLivre;
     	
     	Point positionLivre;
     	
@@ -118,7 +126,7 @@ public class Bot_GT extends jeu.Joueur implements reseau.JoueurReseauInterface {
 				ArrayList<Point> arrayPointLivres = (ArrayList<Point>) listeLivre.get(2);
     			for (Point p : arrayPointLivres){
     				
-    	     		if(t.contientUnLivreQuiNeLuiAppartientPas(this, t.donneContenuCellule(p))){
+    	     		if(Plateau.contientUnLivreQuiNeLuiAppartientPas(this, t.donneContenuCellule(p))){
     	     			positionLivre = p;
     	     	     	ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), positionLivre);
     	     			return arrayPointChemin;
@@ -127,7 +135,7 @@ public class Bot_GT extends jeu.Joueur implements reseau.JoueurReseauInterface {
     		}
     	}
     }
-	
+    
 	public Action direction(Node node){
     	if (node.getPosX() < this.donnePosition().getX() && node.getPosY() == this.donnePosition().getY()){
     		return Action.GAUCHE;
@@ -140,4 +148,32 @@ public class Bot_GT extends jeu.Joueur implements reseau.JoueurReseauInterface {
     	}
     	return null;
     }
+	
+	public Point livreLePlusProche_V2(Plateau t) {
+		ArrayList<Point> listeLivre = t.cherche(new Point(0,0), t.donneTaille(), Plateau.CHERCHE_LIVRE).get(2);
+		Point plusProche = listeLivre.get(0);
+		for(Point p : listeLivre) {
+			if(Plateau.contientUnLivreQuiNeLuiAppartientPas(this, t.donneContenuCellule(p))) {
+				if(t.donneCheminEntre(this.donnePosition(), plusProche).size() > t.donneCheminEntre(this.donnePosition(), p).size()) {
+					plusProche = p;
+				}
+			}
+		}
+		return plusProche;
+	}
+	
+	public boolean possibleChercherLivre(Point livre, Point lit, int esprit, Plateau t) {
+		System.err.println(joueurLePlusProche(t));
+		t.donneGrillePourAstar();
+		ArrayList<Node> cheminLivre = t.donneCheminAvecObstaclesSupplementaires(this.donnePosition(), livre, joueurLePlusProche(t));
+		int dstLitDepuisLit = t.donneCheminEntre(livre, lit).size();
+		if(cheminLivre == null || cheminLivre.isEmpty()) {
+			if( (t.donneCheminEntre(this.donnePosition(), livre).size() + dstLitDepuisLit + 20) < esprit)
+				return true;
+		} else {
+			if((cheminLivre.size() + dstLitDepuisLit + 20) < esprit)
+				return true;
+		}
+		return false;
+	}
 }

@@ -1,4 +1,7 @@
-package clientdesarenes;
+﻿package clientdesarenes;
+
+import java.io.File;
+import java.io.IOException;
 
 import gui.FenetreDeJeu;
 import jeu.MaitreDuJeu;
@@ -26,5 +29,6 @@ public class JeuSoloLocal {
         java.awt.EventQueue.invokeLater(() -> {
             f.setVisible(true);
         });  
+        
     }
 }

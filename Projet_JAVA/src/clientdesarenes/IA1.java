@@ -4,6 +4,8 @@ import java.awt.Point;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import jeu.Joueur;
 import jeu.Plateau;
@@ -12,7 +14,8 @@ import jeu.Joueur.Action;
 
 public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
 	String key;
-    
+	Queue<Action> actions = new LinkedList<Action>();
+	
 	IA1(String id, String cle) {
         super(id);
         key = cle;
@@ -21,29 +24,19 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
 	@Override
     public Joueur.Action faitUneAction(Plateau t) {           
         Action a = null;
-        System.out.println(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS"));
         
-        int nbrEsprit = this.donneEsprit();
-        if(nbrEsprit > 80) {
-        	ArrayList <Node> livre = livreLePlusProche(t);
-        	ArrayList <Node> joueur = joueurLePlusProche(t);
-        	Node positionJoueur = joueur.get(joueur.size()-1);
-        	
-        	if (joueur.size() < livre.size() && 
-        		t.donneJoueurEnPosition(positionJoueur.getPosX(), positionJoueur.getPosY()).donneEsprit() <21){
-        		a = direction(joueur.get(0));
-        	} else {
-        		a = direction(livre.get(0));
-        	}
-        } else if(nbrEsprit > 30) {
-        	a = direction(livreLePlusProche(t).get(0));
+        ArrayList <Node> deplacementVersLit = litLePlusProche(t);
+        if(this.donneEsprit() < 50 && deplacementVersLit.size() <= 3){
+        	a = chercheLit(t);
         }
-        else {
-        	a = direction(litLePlusProche(t).get(0));
-        }        
+        else if(this.donneEsprit() > 20 + deplacementVersLit.size()) {
+        	a = chercheLivre(t);
+        } else {
+        	a = chercheLit(t);
+        }
         
-        System.out.println("Bot.faitUneAction: Je joue " + a); 
-        System.out.println(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS"));
+        System.out.println("Bot.faitUneAction: Je joue " + a);
+        this.addAction(a);
         return a;
     }
             
@@ -72,6 +65,95 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
         System.out.println("Bot: On est déconnecté du serveur.");
     }
     
+    public Action chercheLivre(Plateau t){
+    	ArrayList <Node> deplacementVersJoueur = this.joueurLePlusProche(t);
+		ArrayList <Node> deplacementVersLivre = livreLePlusProche(t);
+		
+		Node n = deplacementVersJoueur.get(deplacementVersJoueur.size()-1);
+		int posX = n.getPosX();
+		int posY = n.getPosY();
+		Joueur j = t.donneJoueurEnPosition(posX,posY);
+
+		/* -------------------- CASE 1 : Clear --------------------- */
+		if(deplacementVersJoueur.size() > 3) {
+			return this.direction(deplacementVersLivre.get(0));
+			
+		/* ---------------- CASE 2 : Player 3 cells ---------------- */	
+		} else if (deplacementVersJoueur.size() == 3) {
+			if(deplacementVersLivre.size() <= 3){
+				return this.direction(deplacementVersLivre.get(0));
+			} else {
+				if(this.getActions().peek() == Action.RIEN) {
+					if (j.donnePointsCulture() > this.donnePointsCulture() - 20 
+							&& j.donneEsprit() <= 20 && this.donneEsprit() > 50) {
+						return this.direction(deplacementVersJoueur.get(0));
+					} else {
+						return this.direction(deplacementVersLivre.get(0));
+					}
+				} else {
+					return Action.RIEN;
+				}
+			}
+		
+		/* ---------------- CASE 3 : Player 2 cells ---------------- */	
+		} else if (deplacementVersJoueur.size() == 2) {
+			if(deplacementVersLivre.size() <= 2) {
+				return this.direction(deplacementVersLivre.get(0));
+			} else {
+				if(
+					(j.donnePointsCulture() > this.donnePointsCulture() - 20 
+								&& j.donneEsprit() < this.donneEsprit()) 
+						|| j.donneEsprit() <= 20) {
+					return this.direction(deplacementVersJoueur.get(0));
+				}
+			}
+			
+		/* -------------- CASE 4 : Player next to bot -------------- */	
+		} else {
+			return this.direction(deplacementVersLivre.get(0));
+		}
+		return this.direction(deplacementVersLivre.get(0));
+    }
+    
+    public Action chercheLit(Plateau t){
+    	ArrayList <Node> deplacementVersJoueur = this.joueurLePlusProche(t);
+		ArrayList <Node> deplacementVersLit = litLePlusProche(t);
+		
+		Node n = deplacementVersJoueur.get(deplacementVersJoueur.size()-1);
+		int posX = n.getPosX();
+		int posY = n.getPosY();
+		Joueur j = t.donneJoueurEnPosition(posX,posY);
+
+		/* -------------------- CASE 1 : Clear --------------------- */
+		if(deplacementVersJoueur.size() > 3) {
+			return this.direction(deplacementVersLit.get(0));
+			
+		/* ---------------- CASE 2 : Player 3 cells ---------------- */	
+		} else if (deplacementVersJoueur.size() == 3) {
+			if(this.getActions().peek() == Action.RIEN) {
+				return this.direction(deplacementVersLit.get(0));
+			} else {
+				if(this.donneEsprit() > 15){
+					return Action.RIEN;
+				} else {
+					return this.direction(deplacementVersLit.get(0));
+				}
+			}
+		
+		/* ---------------- CASE 3 : Player 2 cells ---------------- */	
+		} else if (deplacementVersJoueur.size() == 2) {
+			if(j.donneEsprit() <= 20) {
+				return this.direction(deplacementVersJoueur.get(0));
+			} else {
+				return this.direction(deplacementVersLit.get(0));
+			}
+
+		/* -------------- CASE 4 : Player next to bot -------------- */	
+		} else {
+			return this.direction(deplacementVersLit.get(0));
+		}
+    }
+    
     public ArrayList<Node> livreLePlusProche(Plateau t){
     	HashMap listeLivre;
     	
@@ -81,8 +163,7 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
     		listeLivre = t.cherche(this.donnePosition(), i, t.CHERCHE_LIVRE);
     		if (!listeLivre.isEmpty()) {
 				ArrayList<Point> arrayPointLivres = (ArrayList<Point>) listeLivre.get(2);
-    			for (Point p : arrayPointLivres){
-    				
+    			for (Point p : arrayPointLivres){    				
     	     		if(t.contientUnLivreQuiNeLuiAppartientPas(this, t.donneContenuCellule(p))){
     	     			positionLivre = p;
     	     	     	ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), positionLivre);
@@ -92,6 +173,7 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
     		}
     	}
     }
+    
     public ArrayList<Node> litLePlusProche(Plateau t){
     	HashMap listeLit;
     	
@@ -142,6 +224,19 @@ public class IA1 extends jeu.Joueur implements reseau.JoueurReseauInterface {
     	} else if (node.getPosX() == this.donnePosition().getX() && node.getPosY() < this.donnePosition().getY()){
     		return Action.HAUT;
     	}
-    	return null;
+    	return Action.RIEN;
     }
+    
+    
+	public void addAction(Action a) {
+        actions.add(a);
+    }
+	
+	/**
+	 * @return the actions
+	 */
+	public Queue<Action> getActions() {
+		return actions;
+	}
+
 }
