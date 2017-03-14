@@ -1,6 +1,7 @@
 package clientdesarenes;
 
 import java.awt.Point;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -74,6 +75,7 @@ public class IA2 extends jeu.Joueur implements reseau.JoueurReseauInterface {
     	ArrayList <Node> deplacementVersJoueur = this.joueurLePlusProche(t);
 		ArrayList <Node> deplacementVersLivre = livreLePlusProche(t);
         ArrayList <Node> deplacementVersJoueurFort = JoueurFortProche(t);
+        ArrayList <Node> deplacementVersJoueurRiche = JoueurRicheProche(t);
 		
 		Node n = deplacementVersJoueur.get(deplacementVersJoueur.size()-1);
 		int posX = n.getPosX();
@@ -81,11 +83,16 @@ public class IA2 extends jeu.Joueur implements reseau.JoueurReseauInterface {
 		Joueur j = t.donneJoueurEnPosition(posX,posY);
 		
 		Point pFort = new Point(deplacementVersJoueurFort.get(deplacementVersJoueurFort.size()-1).getPosX(),deplacementVersJoueurFort.get(deplacementVersJoueurFort.size()-1).getPosY());
+		Point pRiche = new Point(deplacementVersJoueurRiche.get(deplacementVersJoueurRiche.size()-1).getPosX(),deplacementVersJoueurRiche.get(deplacementVersJoueurRiche.size()-1).getPosY());
 		
-		
-		if(deplacementVersJoueurFort.size()<4&&chercheLitProche(t, pFort)==false&&t.donneJoueurEnPosition(pFort).donneEsprit()+20<this.donneEsprit())
+		if(deplacementVersJoueurFort.size()<4&&!chercheLitProche(t, pFort)&&t.donneJoueurEnPosition(pFort).donneEsprit()+20<this.donneEsprit())
 		{
 			return this.direction(deplacementVersJoueurFort.get(0));
+		}
+		
+		if(chercheRicheProche(t)||!chercheLitProche(t, pRiche))
+		{
+			return this.direction(deplacementVersJoueurRiche.get(0));
 		}
 
 		/* -------------------- CASE 1 : Clear --------------------- */
@@ -132,7 +139,7 @@ public class IA2 extends jeu.Joueur implements reseau.JoueurReseauInterface {
     public boolean chercheLitProche(Plateau t,Point p)
     {
     	HashMap listeLitProche;
-    	listeLitProche = t.cherche(p, 3, t.CHERCHE_LIVRE);
+    	listeLitProche = t.cherche(p, 3, t.CHERCHE_LIT);
     	if(!listeLitProche.isEmpty())
     	{
     		return true;
@@ -313,6 +320,64 @@ public class IA2 extends jeu.Joueur implements reseau.JoueurReseauInterface {
 		ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), positionJoueurLePlusFort);
 		return arrayPointChemin;
 	}
+    
+    public ArrayList<Node> JoueurRicheProche(Plateau t)
+    {
+    	HashMap listeTousJoueur;
+		Joueur joueurLePlusRiche = new Joueur();
+		Point positionJoueurLePlusRiche = new Point(0,0);
+		int numeroJoueur = 0;
+		int nbrLivrePlusRiche = 5;
+		int distanceActuelleAvecFort = 5;
+
+		listeTousJoueur = t.cherche(positionJoueurLePlusRiche, t.donneTaille(), t.CHERCHE_JOUEUR);
+		ArrayList<Point> arrayTousJoueur = (ArrayList<Point>) listeTousJoueur.get(4);
+		
+		
+		for (Point p : arrayTousJoueur) {
+			Joueur temp = t.donneJoueurEnPosition(p);
+			numeroJoueur = temp.donneCouleurNumerique();
+			if((t.nombreDeLivresJoueur(numeroJoueur)>nbrLivrePlusRiche&&p!=this.donnePosition()&&t.donneCheminEntre(this.donnePosition(), p).size()<5)||(this.donnePosition()!=p&&((t.donneCheminEntre(this.donnePosition(), positionJoueurLePlusRiche).size())-(t.donneCheminEntre(this.donnePosition(), p).size()))<((nbrLivrePlusRiche)-(t.nombreDeLivresJoueur(numeroJoueur)))))
+			{
+				nbrLivrePlusRiche = t.nombreDeLivresJoueur(numeroJoueur);
+				joueurLePlusRiche=temp;
+				positionJoueurLePlusRiche = p;
+			}
+
+		}
+		ArrayList<Node> arrayPointChemin = t.donneCheminEntre(this.donnePosition(), positionJoueurLePlusRiche);
+		return arrayPointChemin;
+    }
+    
+    public boolean chercheRicheProche(Plateau t)
+    {
+    	HashMap listeJoueurProche;
+    	int numeroJoueur = 0;
+    	
+    	listeJoueurProche = t.cherche(this.donnePosition(), 5, t.CHERCHE_JOUEUR);
+    	if(listeJoueurProche.isEmpty())
+    	{
+    		return false;
+    	}
+    	else
+    	{
+    		ArrayList<Point> ArrayJoueurRiche = (ArrayList<Point>) listeJoueurProche.get(4);
+    		
+    		for (Point p : ArrayJoueurRiche)
+    		{
+    			Joueur temp = t.donneJoueurEnPosition(p);
+    			numeroJoueur = temp.donneCouleurNumerique();
+    			
+    			if(t.nombreDeLivresJoueur(numeroJoueur)>5)
+    			{
+    				return true;
+    			}
+    			
+    		}
+    	return false;	
+    	}
+    	
+    }
     
     public boolean adjacent(Point position){
     	if ((position.getX() == this.donnePosition().getX() + 1 && position.getY() == this.donnePosition().getY())
