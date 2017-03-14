@@ -41,13 +41,6 @@ public class GoLit extends Routine {
 	 */
 	@Override
 	public void act() {
-		if(super.joueurLePlusProche(bot, plateau).size() > 2) {
-			
-		} else if (super.joueurLePlusProche(bot, plateau).size() == 2) {
-			// Joueur a 2 cases de nous : decision avance ou repli
-		} else {
-			// Joueur a cote de nous : decision attaque ou repli
-		}
 		
 		
 		ArrayList <Node> deplacementVersLit = litLePlusProche(bot, plateau);
@@ -105,11 +98,20 @@ public class GoLit extends Routine {
 	 * @param t Instance du plateau de jeu
 	 * @return ArrayList<Node> Tableau des points
 	 */
-	public ArrayList<Node> litLePlusProche(Bot bot, Plateau t) {
-		
-    	HashMap listeLit;
-    	Point positionLit;
+    public ArrayList<Node> litLePlusProche(Bot bot, Plateau t){
     	
+    	HashMap listeLit;
+    	bot.setLivreChasse(null);
+    	Point positionLit;
+    	Point positionLitNonAdjacent = null;
+    	
+    	if(bot.getLitChasse() != null) {
+    		ArrayList<Node> arrayPointChemin = t.donneCheminEntre(bot.donnePosition(), bot.getLitChasse());
+    		if(adjacent(bot.getLitChasse())) {
+    			bot.setLitChasse(null);
+    		}
+    		return arrayPointChemin;
+    	}
     	for(int i = 1;;++i){
     		listeLit = t.cherche(bot.donnePosition(), i, t.CHERCHE_LIT);
     		
@@ -117,9 +119,19 @@ public class GoLit extends Routine {
 				ArrayList<Point> arrayPointLit = (ArrayList<Point>) listeLit.get(1);
     			for (Point p : arrayPointLit){
     				positionLit = p;
-	     	     	ArrayList<Node> arrayPointChemin = t.donneCheminEntre(bot.donnePosition(), positionLit);
-	     			return arrayPointChemin;
+    				if(adjacent(positionLit)){
+    					ArrayList<Node> arrayPointChemin = t.donneCheminEntre(bot.donnePosition(), positionLit);
+    					bot.setLitChasse(null);
+    	     			return arrayPointChemin;
+    				} else {
+    					positionLitNonAdjacent = p;
+    				}
     	     	}
+    			if(positionLitNonAdjacent != null) {
+    				ArrayList<Node> arrayPointChemin = t.donneCheminEntre(bot.donnePosition(), positionLitNonAdjacent);
+    				bot.setLitChasse(positionLitNonAdjacent);
+    				return arrayPointChemin;
+    			}
     		}
     	}
     }

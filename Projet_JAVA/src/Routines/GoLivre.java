@@ -98,25 +98,53 @@ public class GoLivre extends Routine {
 	 * @param t Instance du plateau de jeu
 	 * @return ArrayList<Node> Tableau des points
 	 */
-	public ArrayList<Node> livreLePlusProche(Bot bot, Plateau t) {
-		
-		HashMap listeLivre;
-		Point positionLivre;
+	public ArrayList<Node> livreLePlusProche(Bot bot, Plateau t){
+    	int flag;
+    	HashMap listeLivre;
+    	bot.setLitChasse(null);
+    	Point positionLivre;
+    	Point positionLivreNonAdjacent = null;
+    	Point positionLivrePossede = null;
 
-		for(int i = 1;;++i){
-			listeLivre = t.cherche(bot.donnePosition(), i, t.CHERCHE_LIVRE);
-			if (!listeLivre.isEmpty()) {
-				ArrayList<Point> arrayPointLivres = (ArrayList<Point>) listeLivre.get(2);
-				for (Point p : arrayPointLivres){
-
-					if(t.contientUnLivreQuiNeLuiAppartientPas(bot, t.donneContenuCellule(p))){
-						positionLivre = p;
-						ArrayList<Node> arrayPointChemin = t.donneCheminEntre(bot.donnePosition(), positionLivre);
-						return arrayPointChemin;
-					}
-				}
-			}
-		}
-	}
+    	if(bot.getLivreChasse() != null) {
+    		ArrayList<Node> arrayPointChemin = t.donneCheminEntre(bot.donnePosition(), bot.getLivreChasse());
+    		if(adjacent(bot.getLivreChasse())) {
+    			bot.setLivreChasse(null);
+    		}
+    		return arrayPointChemin;
+    	} else {
+    		for(int i = 1;;++i){
+        		listeLivre = t.cherche(bot.donnePosition(), i, t.CHERCHE_LIVRE);
+        		if (!listeLivre.isEmpty()) {
+    				ArrayList<Point> arrayPointLivres = (ArrayList<Point>) listeLivre.get(2);
+        			for (Point p : arrayPointLivres) {
+        	     		if(t.contientUnLivreQuiNeLuiAppartientPas(bot, t.donneContenuCellule(p))){
+        	     			positionLivre = p;
+        	     			if (adjacent(positionLivre)){
+        	     				ArrayList<Node> arrayPointChemin = t.donneCheminEntre(bot.donnePosition(), positionLivre);
+        	     				bot.setLivreChasse(null);
+            	     			return arrayPointChemin;
+        	     			} else {
+        	     				if(t.donneProprietaireDuLivre(t.donneContenuCellule(positionLivre)) != 0) {
+        	     					positionLivrePossede = p;
+        	     				} else {
+        	     					positionLivreNonAdjacent = p;
+        	     				}
+        	     			}
+        	     		}
+        	     	}
+        			if (positionLivrePossede != null) {
+        				ArrayList<Node> arrayPointChemin = t.donneCheminEntre(bot.donnePosition(), positionLivrePossede);
+        				bot.setLivreChasse(positionLivrePossede);
+        				return arrayPointChemin;
+        			} else if(positionLivreNonAdjacent != null) {
+        				ArrayList<Node> arrayPointChemin = t.donneCheminEntre(bot.donnePosition(), positionLivreNonAdjacent);
+        				bot.setLivreChasse(positionLivreNonAdjacent);
+        				return arrayPointChemin;
+        			}
+        		}
+        	}
+    	}
+    }
 
 }
